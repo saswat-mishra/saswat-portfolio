@@ -2,12 +2,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-export default defineConfig({
-  // Base path for GitHub Pages: https://saswat-mishra.github.io/saswat-portfolio/
-  base: '/saswat-portfolio/',
+// Base is /saswat-portfolio/ for production (GitHub Pages subdirectory),
+// and / for local dev so hard-coded asset paths (/models/, /videos/, etc.) work unchanged.
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/saswat-portfolio/' : '/',
   plugins: [
     react(),
     tailwindcss(),
   ],
   assetsInclude: ['**/*.glb', '**/*.gltf'],
-})
+}))

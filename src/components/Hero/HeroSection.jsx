@@ -7,7 +7,7 @@ import * as THREE from 'three';
 // ─── 3D Model Component ────────────────────────────────────────────────────────
 function AvatarModel() {
   const group = useRef();
-  const { scene, animations } = useGLTF('/models/model.glb');
+  const { scene, animations } = useGLTF(`${import.meta.env.BASE_URL}models/model.glb`);
   const { actions, names } = useAnimations(animations, group);
 
   useEffect(() => {
@@ -196,7 +196,7 @@ function MusicPlayer() {
   const barsRef = useRef([0.3, 0.5, 0.7, 0.4, 0.6, 0.5, 0.3, 0.45]);
 
   useEffect(() => {
-    const audio = new Audio('/audio/dance.mp3');
+    const audio = new Audio(`${import.meta.env.BASE_URL}audio/dance.mp3`);
     audio.loop = true;
     audio.volume = 0;
     audio.preload = 'metadata';
@@ -864,4 +864,4 @@ export default function HeroSection() {
   );
 }
 
-useGLTF.preload('/models/model.glb');
+useGLTF.preload(`${import.meta.env.BASE_URL}models/model.glb`);

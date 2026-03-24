@@ -4,14 +4,15 @@ import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
 // ─── Preload GLBs at module level ─────────────────────────────────────────────
-useGLTF.preload('/models/iphone.glb');
-useGLTF.preload('/models/macbook2.glb');
+const BASE = import.meta.env.BASE_URL;
+useGLTF.preload(`${BASE}models/iphone.glb`);
+useGLTF.preload(`${BASE}models/macbook2.glb`);
 
 // ─── Projects Data ────────────────────────────────────────────────────────────
 const PROJECTS = [
   {
     id: 1, title: 'AI B2B Lead Engine', subtitle: 'LangGraph Multi-Agent', mockup: 'macbook',
-    videoSrc: '/videos/portfolio/B2B Leads Agent.mp4',
+    videoSrc: `${BASE}videos/portfolio/B2B Leads Agent.mp4`,
     category: 'Multi-Agent AI', status: 'DELIVERED',
     tags: ['LangGraph', 'LangChain', 'GPT-4o', 'Twilio', 'Retell AI', 'Streamlit', 'Pydantic v2'],
     description: '6-agent hub-and-spoke StateGraph for end-to-end B2B sales automation. MEDDIC qualification scoring (0-60), omnichannel outreach via LinkedIn + email + AI voice calls. 7 embedded sales frameworks. Real-time Streamlit dashboard with human-in-the-loop review. 124 tests.',
@@ -20,7 +21,7 @@ const PROJECTS = [
   },
   {
     id: 2, title: 'Podit', subtitle: 'AI Voice Event Agent', mockup: 'iphone',
-    videoSrc: '/videos/podit.mp4',
+    videoSrc: `${BASE}videos/podit.mp4`,
     category: 'AI Voice Agent', status: 'LIVE',
     tags: ['LangChain', 'LangGraph', 'OpenAI', 'Twilio', 'React Native', 'Supabase'],
     description: 'Hybrid voice/text AI agent for intelligent event planning & scheduling. Detects conflicts, integrates Google Calendar, respects user preferences (sleep/work hours) via dynamic guardrails.',
@@ -28,7 +29,7 @@ const PROJECTS = [
   },
   {
     id: 3, title: 'Hyper-real Avatar Pipeline', subtitle: 'Virtual Influencer System', mockup: 'macbook',
-    videoSrc: '/videos/portfolio/AI Video generated pipeline.mp4',
+    videoSrc: `${BASE}videos/portfolio/AI Video generated pipeline.mp4`,
     category: 'Generative AI', status: 'DELIVERED',
     tags: ['HeyGen', 'Flux Kontext', 'ElevenLabs', 'Stable Diffusion', 'AI Video'],
     description: 'End-to-end pipeline converting text scripts to hyper-real lip-synced avatar videos. Character consistency, outfit/background/pose variations, scalable branded content at scale for B2B marketing.',
@@ -37,7 +38,7 @@ const PROJECTS = [
   },
   {
     id: 4, title: 'MoneyPulse', subtitle: 'Gen AI Financial Reels', mockup: 'iphone',
-    videoSrc: '/videos/moneypulse.mp4',
+    videoSrc: `${BASE}videos/moneypulse.mp4`,
     category: 'Generative AI', status: 'LIVE',
     tags: ['Gen AI', 'Video Pipeline', 'Web Scraping', 'Market Data', 'Automation'],
     description: 'Real-time financial news reels powered by a fully automated Gen AI video pipeline. Scrapes market data, generates AI video summaries in news-reel format — raw data to publishable video.',
@@ -45,7 +46,7 @@ const PROJECTS = [
   },
   {
     id: 5, title: 'MetaHuman AI Avatar', subtitle: 'Real-Time Speech + LLM', mockup: 'macbook',
-    videoSrc: '/videos/portfolio/Metahuman AI avatar.mp4',
+    videoSrc: `${BASE}videos/portfolio/Metahuman AI avatar.mp4`,
     category: 'Real-time AI', status: 'DELIVERED',
     tags: ['Unreal Engine 5', 'MetaHuman', 'NVIDIA Audio2Face', 'GPT-4', 'Pixel Streaming', 'STT'],
     description: 'Interactive MetaHuman in UE5 with live STT → GPT-4 → AI voice + facial animation pipeline. Delivered via Pixel Streaming. Production-ready AI assistant for immersive web-based experiences.',
@@ -54,7 +55,7 @@ const PROJECTS = [
   },
   {
     id: 6, title: 'AI Conversational NPC', subtitle: 'Ready Player Me + GPT', mockup: 'macbook',
-    videoSrc: '/videos/portfolio/AI conveersational NPC.mp4',
+    videoSrc: `${BASE}videos/portfolio/AI conveersational NPC.mp4`,
     category: '3D / Gaming', status: 'DELIVERED',
     tags: ['Unreal Engine 5', 'Ready Player Me', 'ChatGPT', 'TTS', '3D Animation', 'Facial Sync'],
     description: 'AI NPC with full facial animation. Voice input → ChatGPT processing → TTS with real-time lip-sync. Built on Ready Player Me character with immersive gameplay interaction.',
@@ -63,7 +64,7 @@ const PROJECTS = [
   },
   {
     id: 7, title: 'Creatospace', subtitle: '3D Multiplayer Metaverse', mockup: 'macbook',
-    videoSrc: '/videos/portfolio/Creatospace.mp4',
+    videoSrc: `${BASE}videos/portfolio/Creatospace.mp4`,
     category: '3D / Gaming', status: 'LAUNCHED',
     tags: ['Unreal Engine 5', 'AWS GameLift', 'Multiplayer', 'Spatial Audio', 'AjnaLens VR'],
     description: 'Cross-platform 3D multiplayer metaverse with spatial voice chat, screen sharing & in-game media. 1200+ users. Partnered with AjnaLens VR for immersive hardware integration.',
@@ -71,7 +72,7 @@ const PROJECTS = [
   },
   {
     id: 8, title: 'Real-time Pose Tracking', subtitle: 'RGB Camera → Unreal Engine', mockup: 'macbook',
-    videoSrc: '/videos/portfolio/Real-time Pose tracking.mp4',
+    videoSrc: `${BASE}videos/portfolio/Real-time Pose tracking.mp4`,
     category: 'Computer Vision', status: 'DELIVERED',
     tags: ['Unreal Engine 5', 'OpenCV', 'YOLO', 'Deep Learning', 'Real-time', '2D→3D Transform'],
     description: 'Multiplayer 3D cricket stadium in UE5 with players animated in real-time from RGB camera feed using OpenCV + YOLO motion tracking and 2D-to-3D matrix transformation.',
@@ -412,7 +413,7 @@ function DeviceModelWithScreen({ gltfPath, videoSrc, visible, deviceType, projec
 // ─── DeviceCanvas ─────────────────────────────────────────────────────────────
 function DeviceCanvas({ project, visible, swayDir }) {
   const isIphone = project.mockup === 'iphone';
-  const modelPath = isIphone ? '/models/iphone.glb' : '/models/macbook2.glb';
+  const modelPath = isIphone ? `${BASE}models/iphone.glb` : `${BASE}models/macbook2.glb`;
   const videoSrc = project.videoSrc || null;
 
   // Canvas display sizes — larger MacBook for better visual impact; iPhone at 9:16 (−10%)

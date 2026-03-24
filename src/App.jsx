@@ -235,7 +235,7 @@ export default function App() {
     const VOLUME = 0.32;
     // Pre-create a pool of Audio instances so rapid clicks overlap cleanly
     const pool = Array.from({ length: POOL_SIZE }, () => {
-      const a = new Audio('/audio/click.mp3');
+      const a = new Audio(`${import.meta.env.BASE_URL}audio/click.mp3`);
       a.volume = VOLUME;
       a.preload = 'auto';
       return a;

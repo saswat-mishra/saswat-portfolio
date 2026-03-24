@@ -350,18 +350,44 @@ function DeviceModelWithScreen({ gltfPath, videoSrc, visible, deviceType, projec
           const ctx = drawCanvas.getContext('2d');
           const vw = videoEl.videoWidth;
           const vh = videoEl.videoHeight;
-          // iPhone: contain-fit × 0.9 — keeps video 10% inside screen mesh edges
-          //         so it never bleeds past the phone's 3D bezel on any screen size
-          // MacBook: cover-fit (fills widescreen area, crops vertically if needed)
-          const sc = deviceType === 'iphone'
-            ? Math.min(cw / vw, ch / vh) * 0.9
-            : Math.max(cw / vw, ch / vh);
-          const sw = vw * sc;
-          const sh = vh * sc;
-          const dx = (cw - sw) / 2;
-          const dy = (ch - sh) / 2;
           ctx.fillStyle = '#000';
           ctx.fillRect(0, 0, cw, ch);
+
+          let sw, sh, dx, dy;
+
+          if (deviceType === 'iphone') {
+            // ── iPhone UV-corrected draw ─────────────────────────────────────
+            // The iPhone GLB screen mesh maps only a horizontal band of the
+            // canvas texture (U = 0.2693→0.7307, V = 0→1). This creates a
+            // non-square pixel aspect ratio (PAR) in physical screen space:
+            //   screen region in canvas px: 332 wide × 1280 tall
+            //   physical screen dimensions:  7.11 wide × 15.49 tall (model units)
+            //   PAR = (7.11/332) / (15.49/1280) = 1.7689
+            //   → each canvas-X pixel appears 1.77× wider than a canvas-Y pixel
+            // Drawing with a uniform scale (Math.min) ignores PAR, so the video
+            // appears 1.77× horizontally stretched. Fix: pre-compensate by drawing
+            // the video with an X-squished / Y-stretched canvas size.
+            const UV_U0   = 0.2693, UV_U1 = 0.7307;
+            const scrX    = cw * UV_U0;              // 193.9 px — left of screen UV
+            const scrW    = cw * (UV_U1 - UV_U0);   // 332.2 px — screen UV width
+            const scrH    = ch;                       // 1280 px  — screen UV height
+            const PAR     = 1.7689;  // measured: (7.1127/332.2)/(15.4926/1280)
+            // Contain-fit scale in physical space (0.9 → 10% inset from all edges)
+            const s = Math.min(scrW / vw, scrH / (vh * PAR)) * 0.9;
+            sw = vw * s;           // canvas draw width  (compressed by PAR)
+            sh = vh * s * PAR;     // canvas draw height (expanded by PAR)
+            // Center horizontally within the screen UV region; center vertically
+            dx = scrX + (scrW - sw) / 2;
+            dy = (scrH - sh) / 2;
+          } else {
+            // MacBook: cover-fit (fills widescreen area, crops vertically if needed)
+            const sc = Math.max(cw / vw, ch / vh);
+            sw = vw * sc;
+            sh = vh * sc;
+            dx = (cw - sw) / 2;
+            dy = (ch - sh) / 2;
+          }
+
           // Mirror-correct the video: GLB screen mesh UVs are horizontally flipped.
           // For MacBook: canvas flip + UV texture flip = correct display.
           // For iPhone: canvas flip corrects the mirror without UV flip.

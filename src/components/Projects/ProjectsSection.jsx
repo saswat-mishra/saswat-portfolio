@@ -203,8 +203,7 @@ function DeviceModelWithScreen({ gltfPath, videoSrc, visible, deviceType, projec
   const dragOffset = useRef({ y: 0, x: 0 });
   const dragVel = useRef({ y: 0, x: 0 });
 
-  // Video element — created without src for lazy loading.
-  // Src is set in a separate effect when the card becomes visible.
+  // Video element — pre-loaded immediately, played when card becomes visible.
   const videoRef = useRef(null);
   const videoReady = useRef(false);
 
@@ -214,7 +213,8 @@ function DeviceModelWithScreen({ gltfPath, videoSrc, visible, deviceType, projec
     v.muted = true;
     v.playsInline = true;
     v.loop = true;
-    v.preload = 'none'; // lazy: don't load until visible
+    v.preload = 'auto'; // pre-load immediately for instant playback
+    v.src = videoSrc;   // set src right away so browser starts buffering
     v.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;';
     document.body.appendChild(v);
     videoRef.current = v;
@@ -228,13 +228,10 @@ function DeviceModelWithScreen({ gltfPath, videoSrc, visible, deviceType, projec
     };
   }, [videoSrc]);
 
-  // Start loading and playing only when card becomes visible
+  // Play when card becomes visible (video is already buffered)
   useEffect(() => {
     const v = videoRef.current;
     if (!v || !videoSrc || !visible) return;
-    if (!v.src) {
-      v.src = videoSrc;
-    }
     v.play().catch(() => {});
   }, [visible, videoSrc]);
 
@@ -353,10 +350,11 @@ function DeviceModelWithScreen({ gltfPath, videoSrc, visible, deviceType, projec
           const ctx = drawCanvas.getContext('2d');
           const vw = videoEl.videoWidth;
           const vh = videoEl.videoHeight;
-          // iPhone: contain-fit (no horizontal overflow, respects phone screen bounds)
+          // iPhone: contain-fit × 0.9 — keeps video 10% inside screen mesh edges
+          //         so it never bleeds past the phone's 3D bezel on any screen size
           // MacBook: cover-fit (fills widescreen area, crops vertically if needed)
           const sc = deviceType === 'iphone'
-            ? Math.min(cw / vw, ch / vh)
+            ? Math.min(cw / vw, ch / vh) * 0.9
             : Math.max(cw / vw, ch / vh);
           const sw = vw * sc;
           const sh = vh * sc;
@@ -416,9 +414,9 @@ function DeviceCanvas({ project, visible, swayDir }) {
   const modelPath = isIphone ? `${BASE}models/iphone.glb` : `${BASE}models/macbook2.glb`;
   const videoSrc = project.videoSrc || null;
 
-  // Canvas display sizes — larger MacBook for better visual impact; iPhone at 9:16 (−10%)
-  const canvasW = isIphone ? 234 : 560;
-  const canvasH = isIphone ? 416 : 350;
+  // Canvas display sizes — larger MacBook for better visual impact; iPhone at 9:16
+  const canvasW = isIphone ? 260 : 560;
+  const canvasH = isIphone ? 462 : 350;
 
   // Shared drag state between the wrapper div (pointer events) and the inner R3F component
   const dragRef = useRef({ active: false, lastX: 0, lastY: 0, deltaY: 0, deltaX: 0 });
@@ -645,7 +643,7 @@ function ProjectCard({ project, index, onPlay }) {
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0,
-        width: isIphone ? '252px' : '580px',
+        width: isIphone ? '280px' : '580px',
         maxWidth: '100%',
         overflow: 'hidden',
       }}>

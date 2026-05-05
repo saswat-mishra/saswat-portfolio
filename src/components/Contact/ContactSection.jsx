@@ -60,8 +60,8 @@ const CONTACT_INFO = [
   {
     icon: '⬡',
     label: 'LINKEDIN',
-    value: 'linkedin.com/in/saswat-mishra',
-    href: 'https://linkedin.com/in/saswat-mishra',
+    value: 'linkedin.com/in/saswatbuilds',
+    href: 'https://www.linkedin.com/in/saswatbuilds/',
     color: '#00d4ff',
   },
 ];
@@ -255,7 +255,7 @@ function ContactInfoCard({ visible }) {
               GitHub
             </a>
             <a
-              href="https://linkedin.com/in/saswat-mishra"
+              href="https://www.linkedin.com/in/saswatbuilds/"
               target="_blank"
               rel="noopener noreferrer"
               style={{ ...styles.quickLinkBtn, borderColor: 'rgba(0,212,255,0.2)', background: 'rgba(0,212,255,0.05)' }}

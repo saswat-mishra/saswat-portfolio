@@ -11,6 +11,22 @@ useGLTF.preload(`${BASE}models/macbook2.glb`);
 // ─── Projects Data ────────────────────────────────────────────────────────────
 const PROJECTS = [
   {
+    id: 9, title: 'Indian Legal AI Platform', subtitle: 'Hybrid RAG · LangGraph Agent', mockup: 'macbook',
+    videoSrc: `${BASE}videos/portfolio/Legal RAG Platform.mp4`,
+    category: 'Vertical AI / RAG', status: 'LIVE',
+    tags: ['Hybrid RAG', 'Voyage law-2', 'Qdrant', 'BM25 + Reranker', 'LangGraph', 'GPT-4o', 'Next.js', 'Supabase'],
+    description: 'End-to-end AI legal research & drafting platform for India. Hybrid RAG — Voyage law-2 embeddings + Qdrant + BM25 + LLM reranker — over 362 curated chunks across 41 statutes, 50 Supreme Court cases & a 30-edge citator graph. LangGraph agent: classify → clarify → retrieve → synthesize → verify. Citation verifier strips hallucinated cites; quote-check via fuzzy match. 21 contract types + 5 legal notices with PDF generation, clause-level RAG-grounded audit, and edit-improve loop.',
+    testimonial: null,
+  },
+  {
+    id: 10, title: 'Movin Homes', subtitle: 'PropTech AI Marketplace', mockup: 'macbook',
+    videoSrc: `${BASE}videos/portfolio/Movin Homes.mp4`,
+    category: 'PropTech / Data', status: 'LAUNCHED',
+    tags: ['Python', 'Streamlit', 'Web Scraping', 'Data Analytics', 'React', 'Tailwind'],
+    description: 'Dual-sided PropTech platform built as CTO & co-founder. Python/Streamlit analytics engine scrapes live market data (99acres, Housing.com) and uses variance mapping + sale velocity to flag undervalued properties — enabling 7-day flips at 12% margins. React/Tailwind consumer marketplace onboards buyers, sellers and brokers, scaling a 100+ broker network. Took Movin Homes to the South Park Commons Fall 2025 finals.',
+    testimonial: null,
+  },
+  {
     id: 1, title: 'AI B2B Lead Engine', subtitle: 'LangGraph Multi-Agent', mockup: 'macbook',
     videoSrc: `${BASE}videos/portfolio/B2B Leads Agent.mp4`,
     category: 'Multi-Agent AI', status: 'DELIVERED',

@@ -11,6 +11,14 @@ useGLTF.preload(`${BASE}models/macbook2.glb`);
 // ─── Projects Data ────────────────────────────────────────────────────────────
 const PROJECTS = [
   {
+    id: 11, title: 'Claude Cowork', subtitle: 'LinkedIn Multi-Agent Automation', mockup: 'macbook',
+    videoSrc: `${BASE}videos/portfolio/Claude Cowork LinkedIn.mp4`,
+    category: 'Multi-Agent AI', status: 'LIVE',
+    tags: ['Python', 'Claude API', '12 Agents', 'LinkedIn', 'Apify', 'Chrome Automation', 'Google Sheets'],
+    description: 'Fully autonomous LinkedIn GTM system with 12 Python agents orchestrated via the Claude API. Auto-discovers trending AI topics across 22 sources, drafts and publishes 2 posts/day in author voice, scores leads on a 100-point ICP model (title · intent · company fit · activity), runs a 7-day warmup per prospect, and sends personalized DM outreach — zero manual input. 28-day results: 3,676 impressions (+5,735%), 1,156 members reached, 13 posts live, 31 leads in pipeline.',
+    testimonial: null,
+  },
+  {
     id: 1, title: 'AI B2B Lead Engine', subtitle: 'LangGraph Multi-Agent', mockup: 'macbook',
     videoSrc: `${BASE}videos/portfolio/B2B Leads Agent.mp4`,
     category: 'Multi-Agent AI', status: 'DELIVERED',

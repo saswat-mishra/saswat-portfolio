@@ -1,4 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+/* Self-hosted fonts (public/fonts/*.woff2) — no external request, no render
+   block. Critical weights are <link rel=preload>ed in index.html so they are
+   ready before first paint (no swap reflow → no CLS). font-display:swap is a
+   safety net for non-preloaded weights. Share Tech Mono dropped (unused). */
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/jetbrains-mono-400.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/jetbrains-mono-500.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/jetbrains-mono-600.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/jetbrains-mono-700.woff2') format('woff2');}
+@font-face{font-family:'Orbitron';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/orbitron-700.woff2') format('woff2');}
+@font-face{font-family:'Orbitron';font-style:normal;font-weight:800;font-display:swap;src:url('/fonts/orbitron-800.woff2') format('woff2');}
+@font-face{font-family:'Orbitron';font-style:normal;font-weight:900;font-display:swap;src:url('/fonts/orbitron-900.woff2') format('woff2');}
 
 @import "tailwindcss";
 

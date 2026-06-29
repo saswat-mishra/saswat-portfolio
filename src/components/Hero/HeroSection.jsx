@@ -1,115 +1,89 @@
-import { useRef, useEffect, useState, Suspense, useCallback } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, useAnimations, OrbitControls, Environment, Float } from '@react-three/drei';
-import { motion, AnimatePresence } from 'framer-motion';
-import * as THREE from 'three';
+import { useRef, useEffect, useState, Suspense, useCallback, lazy } from 'react';
+import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
+import { SITE } from '../../site.config.js';
 
-// ─── 3D Model Component ────────────────────────────────────────────────────────
-function AvatarModel() {
-  const group = useRef();
-  const { scene, animations } = useGLTF(`${import.meta.env.BASE_URL}models/model.glb`);
-  const { actions, names } = useAnimations(animations, group);
+// Three.js is isolated in its own chunk, dynamically imported only on desktop
+// with motion allowed, after load/on-view (3D performance contract, Dossier §3).
+const HeroCanvas = lazy(() => import('./HeroCanvas.jsx'));
+const BASE = import.meta.env.BASE_URL;
+
+// ─── Hero visual: static poster (LCP) + deferred 3D ───────────────────────────
+// The poster <img> is in the prerendered HTML and is the LCP element. The 3D
+// canvas is never loaded under prefers-reduced-motion or on mobile breakpoints
+// (zero Three.js JS there); on desktop it loads after the load event + on-view
+// and fades in over the poster. The column has fixed dims → no CLS.
+function HeroVisual() {
+  const [enabled, setEnabled] = useState(false); // desktop + motion-ok (client-only)
+  const [show, setShow] = useState(false); // 3D ready to mount
+  const ref = useRef(null);
 
   useEffect(() => {
-    if (names.length > 0) {
-      const firstAction = actions[names[0]];
-      if (firstAction) {
-        firstAction.reset().fadeIn(0.5).play();
-      }
-    }
-  }, [actions, names]);
+    const desktop = window.matchMedia('(min-width: 769px)').matches;
+    const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setEnabled(desktop && motionOk);
+  }, []);
 
-  useFrame((_, delta) => {
-    if (group.current) {
-      group.current.rotation.y += delta * 0.15;
-    }
-  });
+  useEffect(() => {
+    if (!enabled) return;
+    let idleId;
+    const fire = () => setShow(true);
+    // Load 3D AFTER the load event (Dossier §3) — the hero is above the fold, so
+    // it is always "in view"; we defer to idle time so the static poster wins LCP
+    // and the heavy Three.js work never competes with first paint.
+    const schedule = () => {
+      if (typeof window.requestIdleCallback === 'function') idleId = window.requestIdleCallback(fire, { timeout: 1500 });
+      else idleId = setTimeout(fire, 300);
+    };
+    if (document.readyState === 'complete') schedule();
+    else window.addEventListener('load', schedule, { once: true });
+    return () => {
+      window.removeEventListener('load', schedule);
+      if (idleId) (window.cancelIdleCallback || clearTimeout)(idleId);
+    };
+  }, [enabled]);
 
   return (
-    <group ref={group} dispose={null}>
-      <primitive object={scene} scale={1.3} position={[0, -1.1, 0]} />
-    </group>
-  );
-}
-
-// ─── 3D Scene ─────────────────────────────────────────────────────────────────
-function Scene() {
-  return (
-    <>
-      {/* Dark scene background */}
-      <color attach="background" args={['#030712']} />
-      <fog attach="fog" args={['#030712', 10, 25]} />
-
-      {/* Lighting — bright green sci-fi illumination for avatar visibility */}
-      <ambientLight intensity={1.2} color="#1a4a2a" />
-
-      {/* Key light — very strong front-facing white/green to illuminate face */}
-      <pointLight position={[0, 1.8, 4]} intensity={8} color="#c8ffd4" distance={12} decay={1.5} />
-      {/* Fill light — bright green from front-left */}
-      <pointLight position={[-1.5, 1, 3]} intensity={5} color="#00ff41" distance={10} decay={1.5} />
-      {/* Fill light — bright cyan from front-right */}
-      <pointLight position={[1.5, 0.5, 3]} intensity={4} color="#00d4ff" distance={10} decay={1.5} />
-      {/* Rim light — top-down directional for overhead fill */}
-      <directionalLight position={[0, 6, 3]} intensity={2.5} color="#00ff88" />
-      {/* Side rim for edge definition */}
-      <directionalLight position={[4, 3, 1]} intensity={1.5} color="#00ff41" />
-      {/* Under/bounce light */}
-      <pointLight position={[0, -0.5, 2]} intensity={2.5} color="#00ff41" distance={6} decay={1.5} />
-
-      <OrbitControls
-        enableZoom={false}
-        enablePan={false}
-        minPolarAngle={Math.PI / 3}
-        maxPolarAngle={Math.PI / 1.8}
-        autoRotate={false}
-      />
-
-      <Float speed={1.2} rotationIntensity={0} floatIntensity={0.4}>
+    <div ref={ref} style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
+      {/* Home-only: preload the LCP poster so it paints as early as possible. */}
+      <Helmet>
+        <link rel="preload" as="image" href={`${BASE}hero-poster.webp`} type="image/webp" fetchpriority="high" />
+      </Helmet>
+      <picture>
+        <source srcSet={`${BASE}hero-poster.webp`} type="image/webp" />
+        <img
+          src={`${BASE}hero-poster.jpg`}
+          alt="Saswat Mishra — AI developer 3D avatar"
+          width="467"
+          height="1030"
+          fetchPriority="high"
+          decoding="async"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center top',
+            opacity: show ? 0 : 1,
+            transition: 'opacity 0.6s ease',
+          }}
+        />
+      </picture>
+      {show && (
         <Suspense fallback={null}>
-          <AvatarModel />
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <HeroCanvas />
+          </div>
         </Suspense>
-      </Float>
-    </>
+      )}
+    </div>
   );
-}
-
-// ─── Typewriter Hook ──────────────────────────────────────────────────────────
-function useTypewriter(texts, speed = 80, pause = 2000) {
-  const [displayText, setDisplayText] = useState('');
-  const [textIndex, setTextIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    const currentText = texts[textIndex];
-
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        if (charIndex < currentText.length) {
-          setDisplayText(currentText.slice(0, charIndex + 1));
-          setCharIndex((c) => c + 1);
-        } else {
-          setTimeout(() => setIsDeleting(true), pause);
-        }
-      } else {
-        if (charIndex > 0) {
-          setDisplayText(currentText.slice(0, charIndex - 1));
-          setCharIndex((c) => c - 1);
-        } else {
-          setIsDeleting(false);
-          setTextIndex((i) => (i + 1) % texts.length);
-        }
-      }
-    }, isDeleting ? speed / 2 : speed);
-
-    return () => clearTimeout(timeout);
-  }, [charIndex, isDeleting, textIndex, texts, speed, pause]);
-
-  return displayText;
 }
 
 // ─── Glitch Text Component ────────────────────────────────────────────────────
-function GlitchText({ text }) {
+function GlitchText({ text, fontSize = 'clamp(2.4rem, 5.5vw, 4.5rem)' }) {
   const [glitching, setGlitching] = useState(false);
 
   useEffect(() => {
@@ -121,7 +95,7 @@ function GlitchText({ text }) {
   }, []);
 
   return (
-    <div className="glitch-container" style={{ position: 'relative', display: 'inline-block' }}>
+    <span className="glitch-container" style={{ position: 'relative', display: 'inline-block' }}>
       <style>{`
         @keyframes glitch-1 {
           0%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
@@ -155,7 +129,7 @@ function GlitchText({ text }) {
       <span style={{
         fontFamily: "'Orbitron', sans-serif",
         fontWeight: 900,
-        fontSize: 'clamp(2.4rem, 5.5vw, 4.5rem)',
+        fontSize,
         color: '#ffffff',
         letterSpacing: '0.05em',
         textShadow: '0 0 30px rgba(0,255,65,0.3)',
@@ -168,20 +142,20 @@ function GlitchText({ text }) {
           <span className="glitch-before" aria-hidden="true" style={{
             fontFamily: "'Orbitron', sans-serif",
             fontWeight: 900,
-            fontSize: 'clamp(2.4rem, 5.5vw, 4.5rem)',
+            fontSize,
             letterSpacing: '0.05em',
             lineHeight: 1.1,
           }}>{text}</span>
           <span className="glitch-after" aria-hidden="true" style={{
             fontFamily: "'Orbitron', sans-serif",
             fontWeight: 900,
-            fontSize: 'clamp(2.4rem, 5.5vw, 4.5rem)',
+            fontSize,
             letterSpacing: '0.05em',
             lineHeight: 1.1,
           }}>{text}</span>
         </>
       )}
-    </div>
+    </span>
   );
 }
 
@@ -470,32 +444,17 @@ function MusicPlayer() {
 
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 export default function HeroSection() {
-  const subtitles = [
-    'Senior AI/ML Engineer',
-    'Gen AI Architect',
-    'Multi-Agent Systems Builder',
-    'Product Manager',
-  ];
-  const typewriterText = useTypewriter(subtitles, 75, 1800);
-
   const containerVariants = {
     hidden: {},
     visible: {
-      transition: { staggerChildren: 0.12, delayChildren: 0.3 },
+      transition: { staggerChildren: 0.1, delayChildren: 0.25 },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 32 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+    hidden: { opacity: 0, y: 28 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
   };
-
-  const stats = [
-    { value: '5+', label: 'YRS EXP' },
-    { value: '10+', label: 'AI PROJECTS' },
-    { value: '$60', label: '/HR RATE' },
-    { value: 'IIT', label: 'DELHI' },
-  ];
 
   return (
     <section
@@ -564,160 +523,118 @@ export default function HeroSection() {
           }}
           className="hero-text-col"
         >
-          {/* Initializing label */}
-          <motion.div variants={itemVariants} style={{ marginBottom: '1.5rem' }}>
+          {/* Eyebrow / byline (terminal) */}
+          <motion.div variants={itemVariants} style={{ marginBottom: '1rem' }}>
             <span style={{
               fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 'clamp(0.7rem, 1.2vw, 0.85rem)',
+              fontSize: 'clamp(0.62rem, 1.1vw, 0.78rem)',
               color: '#00ff41',
-              letterSpacing: '0.1em',
-              display: 'flex',
+              letterSpacing: '0.12em',
+              display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.3rem',
+              gap: '0.4rem',
             }}>
-              {'> INITIALIZING SASWAT.EXE...'}
+              {'> SASWAT MISHRA · SENIOR ML ENGINEER · IIT DELHI'}
               <span className="cursor-blink" style={{ color: '#00ff41', fontWeight: 700 }}>█</span>
             </span>
           </motion.div>
 
-          {/* Main heading with glitch */}
-          <motion.div variants={itemVariants} style={{ marginBottom: '1rem' }}>
-            <GlitchText text="SASWAT" />
-            <br />
-            <GlitchText text="MISHRA" />
+          {/* Outcome-led headline (H1) — keeps the glitch signature */}
+          <motion.div variants={itemVariants} style={{ marginBottom: '1.1rem' }}>
+            <h1 style={{ margin: 0, maxWidth: 620, lineHeight: 1.12 }}>
+              <GlitchText
+                text="AI agents that take the work your team shouldn't be doing off their plate."
+                fontSize="clamp(1.45rem, 3.2vw, 2.5rem)"
+              />
+            </h1>
           </motion.div>
 
-          {/* Typewriter subtitle */}
-          <motion.div variants={itemVariants} style={{ marginBottom: '1.5rem', minHeight: '2rem' }}>
-            <span style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 'clamp(0.9rem, 1.8vw, 1.25rem)',
-              color: '#00d4ff',
-              letterSpacing: '0.05em',
-            }}>
-              {'// '}
-              {typewriterText}
-              <span className="cursor-blink" style={{ color: '#00d4ff', marginLeft: 2 }}>|</span>
-            </span>
-          </motion.div>
-
-          {/* Description */}
+          {/* Buyer-named subhead */}
           <motion.p variants={itemVariants} style={{
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 'clamp(0.78rem, 1.3vw, 0.95rem)',
-            color: '#8892a4',
-            lineHeight: 1.8,
-            marginBottom: '2rem',
-            maxWidth: 480,
+            fontSize: 'clamp(0.8rem, 1.4vw, 1rem)',
+            color: '#a7b2c4',
+            lineHeight: 1.7,
+            marginBottom: '1.4rem',
+            maxWidth: 540,
             borderLeft: '2px solid rgba(0,255,65,0.3)',
             paddingLeft: '1rem',
           }}>
-            IIT Delhi engineer building AI that thinks, speaks &amp; acts — from
-            multi-agent sales bots to MetaHumans to real-time pose tracking.
-            Rising Talent on Upwork. Shipping production-grade AI across industries.
+            Custom multi-agent systems, voice AI &amp; RAG for B2B SaaS and services teams —
+            built by a senior ML engineer (IIT Delhi) who ships production-grade AI, not demos.
           </motion.p>
 
-          {/* CTA Buttons */}
-          <motion.div variants={itemVariants} style={{
-            display: 'flex',
-            gap: '1rem',
-            marginBottom: '2.5rem',
-            flexWrap: 'wrap',
-          }}>
-            <a
-              href="#projects"
-              style={{
-                fontFamily: "'Orbitron', sans-serif",
-                fontWeight: 700,
-                fontSize: '0.78rem',
-                letterSpacing: '0.15em',
-                color: '#030712',
-                backgroundColor: '#00ff41',
-                border: '1px solid #00ff41',
-                padding: '0.75rem 1.8rem',
-                textDecoration: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                boxShadow: '0 0 20px rgba(0,255,65,0.35), inset 0 0 20px rgba(0,255,65,0.1)',
-                clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 40px rgba(0,255,65,0.6), inset 0 0 30px rgba(0,255,65,0.2)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,65,0.35), inset 0 0 20px rgba(0,255,65,0.1)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              VIEW MY WORK
-            </a>
-            <a
-              href="#contact"
-              style={{
-                fontFamily: "'Orbitron', sans-serif",
-                fontWeight: 700,
-                fontSize: '0.78rem',
-                letterSpacing: '0.15em',
-                color: '#00d4ff',
-                backgroundColor: 'transparent',
-                border: '1px solid #00d4ff',
-                padding: '0.75rem 1.8rem',
-                textDecoration: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                boxShadow: '0 0 15px rgba(0,212,255,0.2)',
-                clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(0,212,255,0.1)';
-                e.currentTarget.style.boxShadow = '0 0 30px rgba(0,212,255,0.4)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.boxShadow = '0 0 15px rgba(0,212,255,0.2)';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              HIRE ME
-            </a>
+          {/* One proof signal (hard metric) */}
+          <motion.div variants={itemVariants} style={{ marginBottom: '1.6rem' }}>
+            <span style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 'clamp(0.72rem, 1.3vw, 0.85rem)',
+              color: '#e2e8f0',
+              background: 'rgba(0,255,65,0.08)',
+              border: '1px solid rgba(0,255,65,0.4)',
+              borderRadius: '3px',
+              padding: '0.5rem 0.9rem',
+              boxShadow: '0 0 14px rgba(0,255,65,0.12)',
+            }}>
+              <span style={{ color: '#00ff41', fontWeight: 700 }}>▸ PROVEN</span>
+              <strong style={{ color: '#00ff41' }}>12-agent system → 31 leads in 28 days</strong>
+            </span>
           </motion.div>
 
-          {/* Stats Row */}
-          <motion.div variants={itemVariants} style={{
-            display: 'flex',
-            gap: 'clamp(1rem, 2.5vw, 2rem)',
-            flexWrap: 'wrap',
-          }}>
-            {stats.map((stat, i) => (
-              <div key={i} style={{
-                display: 'flex',
-                flexDirection: 'column',
-                borderLeft: '2px solid rgba(0,255,65,0.4)',
-                paddingLeft: '0.75rem',
-              }}>
-                <span style={{
+          {/* Primary CTA (first-person, high-contrast) + risk-reversal microcopy + secondary */}
+          <motion.div variants={itemVariants}>
+            <div style={{ display: 'flex', gap: '0.9rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <Link
+                to={SITE.cta.href}
+                style={{
                   fontFamily: "'Orbitron', sans-serif",
-                  fontWeight: 800,
-                  fontSize: 'clamp(1.1rem, 2vw, 1.5rem)',
-                  color: '#00ff41',
-                  lineHeight: 1.1,
-                  textShadow: '0 0 10px rgba(0,255,65,0.5)',
-                }}>
-                  {stat.value}
-                </span>
-                <span style={{
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: '0.65rem',
-                  color: '#4a5568',
-                  letterSpacing: '0.1em',
-                  marginTop: '0.2rem',
-                }}>
-                  {stat.label}
-                </span>
-              </div>
-            ))}
+                  fontWeight: 700,
+                  fontSize: 'clamp(0.72rem, 1.2vw, 0.82rem)',
+                  letterSpacing: '0.08em',
+                  color: '#030712',
+                  backgroundColor: '#00ff41',
+                  border: '1px solid #00ff41',
+                  padding: '0.85rem 1.6rem',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease',
+                  boxShadow: '0 0 24px rgba(0,255,65,0.45), inset 0 0 20px rgba(0,255,65,0.1)',
+                  clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 44px rgba(0,255,65,0.7), inset 0 0 30px rgba(0,255,65,0.2)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 24px rgba(0,255,65,0.45), inset 0 0 20px rgba(0,255,65,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              >
+                {SITE.cta.label} →
+              </Link>
+              <Link
+                to="/work"
+                style={{
+                  fontFamily: "'Orbitron', sans-serif",
+                  fontWeight: 700,
+                  fontSize: 'clamp(0.72rem, 1.2vw, 0.82rem)',
+                  letterSpacing: '0.08em',
+                  color: '#00d4ff',
+                  backgroundColor: 'transparent',
+                  border: '1px solid #00d4ff',
+                  padding: '0.85rem 1.4rem',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.25s ease',
+                  boxShadow: '0 0 15px rgba(0,212,255,0.2)',
+                  clipPath: 'polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(0,212,255,0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              >
+                See case studies
+              </Link>
+            </div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.68rem', color: '#5a6678', marginTop: '0.85rem', letterSpacing: '0.04em' }}>
+              {SITE.cta.microcopy}
+            </div>
           </motion.div>
         </motion.div>
 
@@ -748,22 +665,9 @@ export default function HeroSection() {
             zIndex: 2,
           }} />
 
-          <Canvas
-            camera={{ position: [0, 0.2, 5.5], fov: 52 }}
-            style={{ width: '100%', height: '100%', background: 'transparent' }}
-            gl={{
-              alpha: true,
-              antialias: true,
-              toneMapping: THREE.ACESFilmicToneMapping,
-              toneMappingExposure: 1.4,
-            }}
-            onCreated={({ gl, scene }) => {
-              gl.setClearColor(0x030712, 1);
-              scene.background = new THREE.Color('#030712');
-            }}
-          >
-            <Scene />
-          </Canvas>
+          {/* Static poster image is the LCP element; Three.js loads deferred
+              (after load/on-view) and only on desktop with motion allowed. */}
+          <HeroVisual />
 
           {/* HUD decorators */}
           <div style={{
@@ -839,29 +743,31 @@ export default function HeroSection() {
         @media (max-width: 768px) {
           .hero-inner {
             flex-direction: column !important;
+            min-height: auto !important;
           }
-          .hero-canvas-col {
-            flex: 0 0 55vh !important;
-            min-height: 55vh !important;
-            order: -1;
-          }
+          /* Conversion content FIRST on mobile (headline + CTA + proof above the
+             fold); the 3D/poster column peeks below it (no false floor). */
           .hero-text-col {
             flex: none !important;
-            padding: 1.5rem 1.2rem 5rem !important;
+            order: -1;
+            padding: 4.75rem 1.2rem 1.25rem !important;
+          }
+          .hero-canvas-col {
+            flex: 0 0 40vh !important;
+            min-height: 40vh !important;
+            order: 0;
           }
         }
         @media (max-width: 480px) {
           .hero-canvas-col {
-            flex: 0 0 45vh !important;
-            min-height: 45vh !important;
+            flex: 0 0 34vh !important;
+            min-height: 34vh !important;
           }
           .hero-text-col {
-            padding: 1.2rem 1rem 4.5rem !important;
+            padding: 4.5rem 1rem 1.25rem !important;
           }
         }
       `}</style>
     </section>
   );
 }
-
-useGLTF.preload(`${import.meta.env.BASE_URL}models/model.glb`);

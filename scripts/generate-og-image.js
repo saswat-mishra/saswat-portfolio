@@ -143,7 +143,7 @@ for (const stat of stats) {
 // ── Bottom URL ─────────────────────────────────────────────────────────────
 ctx.font = '500 18px "Courier New", monospace';
 ctx.fillStyle = 'rgba(0, 255, 65, 0.5)';
-ctx.fillText('saswat-mishra.github.io/saswat-portfolio', 60, 590);
+ctx.fillText('saswatbuilds.com', 60, 590);
 
 // ── Right accent — availability badge ─────────────────────────────────────
 const badgeX = 980;

@@ -14,10 +14,10 @@ const PROJECT_TYPES = [
 
 const BUDGET_OPTIONS = [
   { value: '', label: '-- select budget range --' },
-  { value: 'under-1k', label: '< $1,000' },
-  { value: '1k-5k', label: '$1,000 – $5,000' },
-  { value: '5k-10k', label: '$5,000 – $10,000' },
-  { value: '10k-plus', label: '$10,000+' },
+  { value: 'pilot', label: '$2,500 (1-week pilot)' },
+  { value: '2.5k-10k', label: '$2,500 – $10,000' },
+  { value: '10k-30k', label: '$10,000 – $30,000' },
+  { value: '30k-plus', label: '$30,000+' },
   { value: 'discuss', label: "Let's discuss" },
 ];
 
@@ -46,7 +46,7 @@ const CONTACT_INFO = [
   {
     icon: '$',
     label: 'RATE',
-    value: '$60/hr | Project-based',
+    value: '$60/hr · $2,500/week',
     href: null,
     color: '#f59e0b',
   },

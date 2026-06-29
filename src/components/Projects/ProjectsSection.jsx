@@ -2,11 +2,17 @@ import { useEffect, useRef, useState, useMemo, Suspense, useCallback } from 'rea
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
+import ClientOnly from '../util/ClientOnly.jsx';
+import { isBrowser } from '../util/env.js';
 
 // ─── Preload GLBs at module level ─────────────────────────────────────────────
 const BASE = import.meta.env.BASE_URL;
-useGLTF.preload(`${BASE}models/iphone.glb`);
-useGLTF.preload(`${BASE}models/macbook2.glb`);
+// Guard: at module-eval time during the prerender pass there is no DOM/loader,
+// so the GLB preloads must only run in the browser.
+if (isBrowser) {
+  useGLTF.preload(`${BASE}models/iphone.glb`);
+  useGLTF.preload(`${BASE}models/macbook2.glb`);
+}
 
 // ─── Projects Data ────────────────────────────────────────────────────────────
 const PROJECTS = [
@@ -237,8 +243,8 @@ function DeviceModelWithScreen({ gltfPath, videoSrc, visible, deviceType, projec
     v.muted = true;
     v.playsInline = true;
     v.loop = true;
-    v.preload = 'auto'; // pre-load immediately for instant playback
-    v.src = videoSrc;   // set src right away so browser starts buffering
+    v.preload = 'none'; // JS budget: do NOT buffer until the card is in view
+    v.src = videoSrc;   // with preload=none, the browser waits for play()/load()
     v.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;';
     document.body.appendChild(v);
     videoRef.current = v;
@@ -502,44 +508,63 @@ function DeviceCanvas({ project, visible, swayDir }) {
       onPointerLeave={handlePointerUp}
       style={{ cursor: 'grab', touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}
     >
-      <Canvas
-        camera={{ position: isIphone ? [0, 0, 3.5] : [0, 0.3, 3.2], fov: isIphone ? 40 : 38 }}
-        dpr={Math.min(window.devicePixelRatio || 1, 2.5)}
-        style={{
-          width: `${canvasW}px`,
-          height: `${canvasH}px`,
-          maxWidth: '100%',
-          display: 'block',
-          flexShrink: 0,
-        }}
-        gl={{
-          alpha: true,
-          antialias: true,
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 0.85,
-          powerPreference: 'high-performance',
-        }}
-      >
-        <ambientLight intensity={0.8} color="#0a2210" />
-        <directionalLight position={[2, 4, 3]} intensity={1.8} color="#00ff41" />
-        <directionalLight position={[-2, 1, 2]} intensity={1.0} color="#00d4ff" />
-        <pointLight position={[0, 0, 3]} intensity={2.0} color="#ffffff" distance={8} decay={2} />
-        <pointLight position={[1, 2, 1]} intensity={1.2} color="#00ff41" distance={6} decay={2} />
-        <Suspense fallback={null}>
-          <DeviceModelWithScreen
-            gltfPath={modelPath}
-            videoSrc={videoSrc}
-            visible={visible}
-            deviceType={project.mockup}
-            projectTitle={project.title}
-            projectTags={project.tags}
-            projectStatus={project.status}
-            projectDescription={project.description}
-            dragRef={dragRef}
-            swayDir={swayDir}
+      {/* 3D canvas is client-only: it reads window.devicePixelRatio and WebGL
+          at render time, and a child builds a CanvasTexture via
+          document.createElement in useMemo — none of which exist in the Node
+          prerender pass. A same-size placeholder reserves the space (no CLS)
+          until the canvas mounts after first paint. */}
+      <ClientOnly
+        fallback={
+          <div
+            aria-hidden="true"
+            style={{
+              width: `${canvasW}px`,
+              height: `${canvasH}px`,
+              maxWidth: '100%',
+              flexShrink: 0,
+            }}
           />
-        </Suspense>
-      </Canvas>
+        }
+      >
+        <Canvas
+          camera={{ position: isIphone ? [0, 0, 3.5] : [0, 0.3, 3.2], fov: isIphone ? 40 : 38 }}
+          dpr={isBrowser ? Math.min(window.devicePixelRatio || 1, 2.5) : 1}
+          style={{
+            width: `${canvasW}px`,
+            height: `${canvasH}px`,
+            maxWidth: '100%',
+            display: 'block',
+            flexShrink: 0,
+          }}
+          gl={{
+            alpha: true,
+            antialias: true,
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 0.85,
+            powerPreference: 'high-performance',
+          }}
+        >
+          <ambientLight intensity={0.8} color="#0a2210" />
+          <directionalLight position={[2, 4, 3]} intensity={1.8} color="#00ff41" />
+          <directionalLight position={[-2, 1, 2]} intensity={1.0} color="#00d4ff" />
+          <pointLight position={[0, 0, 3]} intensity={2.0} color="#ffffff" distance={8} decay={2} />
+          <pointLight position={[1, 2, 1]} intensity={1.2} color="#00ff41" distance={6} decay={2} />
+          <Suspense fallback={null}>
+            <DeviceModelWithScreen
+              gltfPath={modelPath}
+              videoSrc={videoSrc}
+              visible={visible}
+              deviceType={project.mockup}
+              projectTitle={project.title}
+              projectTags={project.tags}
+              projectStatus={project.status}
+              projectDescription={project.description}
+              dragRef={dragRef}
+              swayDir={swayDir}
+            />
+          </Suspense>
+        </Canvas>
+      </ClientOnly>
     </div>
   );
 }

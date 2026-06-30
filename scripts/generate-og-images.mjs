@@ -178,6 +178,7 @@ const cards = [
   { file: resolve(ogDir, 'work.png'), kicker: 'Case Studies', title: 'Shipped AI agent, voice & automation builds' },
   { file: resolve(ogDir, 'blog.png'), kicker: 'Blog', title: 'Field notes on building AI that ships' },
   { file: resolve(ogDir, 'contact.png'), kicker: 'Contact', title: 'Book a free 30-minute AI scoping call' },
+  { file: resolve(ogDir, 'open-source.png'), kicker: 'Open Source', title: 'LangGraph & Voice AI starters (MIT)' },
   ...services.map((s) => ({ file: resolve(ogDir, `${s.slug}.png`), kicker: 'AI Service', title: s.hero?.headline || s.nav })),
   ...work.map((w) => ({ file: resolve(ogDir, `${w.slug}.png`), kicker: `Case Study · ${w.serviceName || ''}`, title: w.title })),
   ...blog.map((p) => ({ file: resolve(ogDir, `${p.slug}.png`), kicker: p.category || 'Article', title: p.title })),

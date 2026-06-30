@@ -11,7 +11,9 @@ export const C = {
   line: 'rgba(0,255,65,0.12)',
   text: '#e2e8f0',
   dim: '#8892a4',
-  faint: '#4b5563',
+  // faint: bumped from #4b5563 (2.66:1 — failed WCAG AA) to #748094 (5.04:1 on
+  // the #030712 bg) so microcopy/labels/copyright pass AA for normal text.
+  faint: '#748094',
   mono: "'JetBrains Mono', monospace",
   display: "'Orbitron', sans-serif",
 };

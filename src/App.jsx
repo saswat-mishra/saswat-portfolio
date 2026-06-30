@@ -12,6 +12,7 @@ const CaseStudy = lazy(() => import('./routes/CaseStudy.jsx'));
 const BlogIndex = lazy(() => import('./routes/BlogIndex.jsx'));
 const BlogPost = lazy(() => import('./routes/BlogPost.jsx'));
 const About = lazy(() => import('./routes/About.jsx'));
+const OpenSource = lazy(() => import('./routes/OpenSource.jsx'));
 const Contact = lazy(() => import('./routes/Contact.jsx'));
 const Search = lazy(() => import('./routes/Search.jsx'));
 const NotFound = lazy(() => import('./routes/NotFound.jsx'));
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/blog" element={<BlogIndex />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/about" element={<About />} />
+        <Route path="/open-source" element={<OpenSource />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/search" element={<Search />} />
         <Route path="*" element={<NotFound />} />

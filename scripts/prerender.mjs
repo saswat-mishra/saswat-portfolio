@@ -73,6 +73,7 @@ function routeSource(route) {
   if (route === '/blog') return 'src/routes/BlogIndex.jsx'
   if (route.startsWith('/blog/')) return 'src/routes/BlogPost.jsx'
   if (route === '/about') return 'src/routes/About.jsx'
+  if (route === '/open-source') return 'src/routes/OpenSource.jsx'
   if (route === '/contact') return 'src/routes/Contact.jsx'
   if (route === '/search') return 'src/routes/Search.jsx'
   return 'src/routes/NotFound.jsx'

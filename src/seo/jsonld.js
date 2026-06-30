@@ -2,7 +2,7 @@
 // into a <script type="application/ld+json"> via Helmet, so it lands in the
 // prerendered static HTML for Google rich results and AI-search citation.
 
-import { SITE, PERSON_ID, ORG_ID, WEBSITE_ID, abs, KNOWS_ABOUT, sameAs } from '../site.config.js';
+import { SITE, PERSON_ID, ORG_ID, WEBSITE_ID, abs, KNOWS_ABOUT, sameAs, ossUrl } from '../site.config.js';
 
 // Reusable inline node references. We inline @type + @id + name (+ url/logo)
 // rather than a bare { @id } so each page's schema is self-describing for
@@ -169,6 +169,22 @@ export function articleJsonLd(post) {
     image: abs(post.image || SITE.ogImage),
     author: personRef(),
     publisher: orgRef(),
+  };
+}
+
+/** repo: { name, title, desc, language, topics } → SoftwareSourceCode (MIT). */
+export function softwareSourceCodeJsonLd(repo) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    name: repo.title,
+    description: repo.desc,
+    codeRepository: ossUrl(repo.name),
+    url: ossUrl(repo.name),
+    programmingLanguage: repo.language,
+    license: 'https://opensource.org/licenses/MIT',
+    author: personRef(),
+    keywords: (repo.topics || []).join(', '),
   };
 }
 

@@ -111,6 +111,7 @@ export const FOOTER_NAV = [
     links: [
       { label: 'Case studies', href: '/work' },
       { label: 'About', href: '/about' },
+      { label: 'Open source', href: '/open-source' },
       { label: 'Contact', href: '/contact' },
       { label: 'Résumé (PDF)', href: '/resume.pdf', external: true },
     ],
@@ -154,6 +155,31 @@ export function headExtras() {
     );
   return out.join('\n');
 }
+
+// Open-source repos surfaced on /open-source (credibility + E-E-A-T/GEO + backlinks).
+// `name` = the GitHub repo slug; the URL derives from the configured GitHub account.
+export const OSS = [
+  {
+    name: 'langgraph-agent-starter',
+    title: 'LangGraph Agent Starter',
+    language: 'Python',
+    desc: 'A production-shaped LangGraph starter: typed state, a plan → act → verify loop, a human-in-the-loop approval checkpoint, and an evals harness — the parts that make an agent reliable, not just demo-able. Runs offline in under 60 seconds.',
+    topics: ['langgraph', 'ai-agents', 'multi-agent', 'human-in-the-loop', 'evals'],
+    highlights: ['Typed agent state', 'plan → act → verify loop', 'Human-in-the-loop checkpoint', 'Evals harness + zero-dep demo'],
+    related: 'ai-agents',
+  },
+  {
+    name: 'voice-ai-agent-starter',
+    title: 'Voice AI Agent Starter',
+    language: 'Python',
+    desc: 'A latency-aware voice AI boilerplate: the STT → LLM → TTS turn pipeline with a per-stage latency budget, barge-in-ready turn handling, and reference Twilio + Retell webhook servers. Simulates a call offline with no keys.',
+    topics: ['voice-ai', 'twilio', 'retell', 'tts', 'realtime'],
+    highlights: ['STT → LLM → TTS pipeline', 'Per-stage latency budget', 'Barge-in ready', 'Twilio + Retell servers'],
+    related: 'voice-ai-agents',
+  },
+];
+/** Full GitHub URL for an OSS repo (derived from SITE.social.github). */
+export const ossUrl = (name) => `${SITE.social.github}/${name}`;
 
 // Knowledge areas for Person JSON-LD (ported from the original site head).
 export const KNOWS_ABOUT = [

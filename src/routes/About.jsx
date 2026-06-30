@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Seo from '../seo/Seo.jsx';
 import { personJsonLd, organizationJsonLd, profilePageJsonLd, breadcrumbJsonLd, faqJsonLd } from '../seo/jsonld.js';
 import { SITE } from '../site.config.js';
@@ -77,6 +78,16 @@ export default function About() {
         <Kicker>Working together</Kicker>
         <SectionTitle>International clients welcome</SectionTitle>
         <p style={para}>I work remotely with founders, operators, and engineering leaders across the US, UK, UAE, and Singapore. I keep working-hours overlap for each region, communicate proactively in writing, and I’m comfortable operating under data-residency and compliance constraints when your domain requires it.</p>
+      </Section>
+
+      <Section>
+        <Kicker>Open source</Kicker>
+        <SectionTitle>Code I’ve made public</SectionTitle>
+        <p style={para}>
+          I open-source the scaffolding behind my client work — a production-shaped LangGraph agent starter and a
+          latency-aware voice AI boilerplate, both MIT-licensed and runnable in under a minute.{' '}
+          <Link to="/open-source" style={{ color: C.green, textDecoration: 'none' }}>See the open-source starters →</Link>
+        </p>
       </Section>
 
       <Section style={{ paddingTop: 0 }}>

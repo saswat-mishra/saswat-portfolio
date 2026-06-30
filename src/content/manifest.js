@@ -54,6 +54,7 @@ export function getAllRoutePaths() {
     '/work',
     '/blog',
     '/about',
+    '/open-source',
     '/contact',
     '/search',
     ...services.map((s) => `/services/${s.slug}`),

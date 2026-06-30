@@ -5,17 +5,14 @@ import Breadcrumbs from '../components/ui/Breadcrumbs.jsx';
 import PageHero from '../components/ui/PageHero.jsx';
 import { Section, Kicker } from '../components/ui/Section.jsx';
 import Button from '../components/ui/Button.jsx';
-import ClientOnly from '../components/util/ClientOnly.jsx';
 import { C } from '../theme.js';
 import { SITE } from '../site.config.js';
 
-// Lead capture path: POST to the Google Apps Script (→ Google Sheet + email
-// notification). See docs/contact-apps-script.gs for the doPost to deploy.
-// Set VITE_GOOGLE_SCRIPT_URL (build-time env / CI secret) to the script URL.
-const SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || '';
+// Lead capture: the form POSTs to /api/lead (a Cloudflare Pages Function in
+// functions/api/lead.js) which forwards to the deployed Google Apps Script
+// (Google Sheet + email notification) server-side, returning a real ok/error.
 
-// Two named testimonials beside the form (Dossier §4: trust adjacent to the
-// conversion point; lead with credibility). Trimmed to punchy, attributable lines.
+// Two named testimonials beside the form (trust adjacent to the conversion point).
 const PROOF = [
   {
     quote:
@@ -34,7 +31,7 @@ const PROOF = [
 export default function Contact() {
   const crumbs = [{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact' }];
   // Single-step, 4 fields. Budget intentionally omitted at first contact to
-  // maximize volume (Dossier §5); qualify on the call.
+  // maximize volume; qualify on the call.
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
   const [status, setStatus] = useState('idle'); // idle | sending | sent
   const [postFailed, setPostFailed] = useState(false);
@@ -45,35 +42,25 @@ export default function Contact() {
     e.preventDefault();
     if (!form.name || !form.email || !form.message || status === 'sending') return;
     setStatus('sending');
-    // Capture the lead BEFORE showing the scheduler, so we get the contact even
-    // if they never book. Best-effort: we still advance to the scheduler on error.
+    // Same-origin Cloudflare Function forwards to the Google Apps Script
+    // (Sheet + email). Server-side call → we get a real success/error.
     try {
-      if (SCRIPT_URL) {
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: JSON.stringify({
-            ...form,
-            source: 'saswatbuilds.com/contact',
-            ts: new Date().toISOString(),
-          }),
-        });
-      } else {
-        setPostFailed(true);
-      }
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          source: 'saswatbuilds.com/contact',
+          ts: new Date().toISOString(),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) setPostFailed(true);
     } catch {
       setPostFailed(true);
     }
     setStatus('sent');
   };
-
-  // Cal.com inline embed, prefilled with the captured name/email (+ notes for
-  // context), dark theme to match the cyberpunk aesthetic.
-  const schedulerSrc =
-    `${SITE.scheduler}?theme=dark` +
-    `&name=${encodeURIComponent(form.name)}` +
-    `&email=${encodeURIComponent(form.email)}` +
-    `&notes=${encodeURIComponent(form.message)}`;
 
   return (
     <>
@@ -93,37 +80,24 @@ export default function Contact() {
 
       <Section>
         {status === 'sent' ? (
-          // ── Form-first → scheduler: lead captured, now show the calendar ──
-          <div style={{ maxWidth: 820, margin: '0 auto' }}>
-            <div style={{ background: C.panel, border: `1px solid ${C.green}`, borderRadius: '4px', padding: '1.2rem 1.4rem', marginBottom: '1.4rem' }}>
-              <div style={{ fontFamily: C.mono, color: C.green, fontWeight: 700, marginBottom: '0.4rem' }}>
+          // ── Lead captured → clean confirmation (I follow up by email) ──
+          <div style={{ maxWidth: 680, margin: '0 auto' }}>
+            <div style={{ background: C.panel, border: `1px solid ${C.green}`, borderRadius: '4px', padding: '1.8rem 1.6rem', textAlign: 'center' }}>
+              <div style={{ fontFamily: C.mono, color: C.green, fontWeight: 700, fontSize: '1.05rem', marginBottom: '0.7rem' }}>
                 ✓ Got it, {form.name.split(' ')[0] || 'thanks'} — your details are in.
               </div>
-              <p style={{ fontFamily: C.mono, fontSize: '0.85rem', color: C.dim, lineHeight: 1.7, margin: 0 }}>
-                Pick a 30-minute slot below to lock in your scoping call. Nothing to prep — we’ll talk through what you want to build.
-                {postFailed && (
-                  <> If the form didn’t save, just email me at <a href={`mailto:${SITE.email}`} style={{ color: C.green }}>{SITE.email}</a>.</>
+              <p style={{ fontFamily: C.mono, fontSize: '0.9rem', color: C.dim, lineHeight: 1.85, margin: 0 }}>
+                {postFailed ? (
+                  <>The form had trouble saving — please email me directly at <a href={`mailto:${SITE.email}`} style={{ color: C.green }}>{SITE.email}</a> and I’ll reply within 1 business day.</>
+                ) : (
+                  <>I’ll personally read your note and email you within <strong style={{ color: C.text }}>1 business day</strong> to set up your free 30-minute scoping call. Talk soon.</>
                 )}
               </p>
+              <div style={{ marginTop: '1.4rem', display: 'flex', gap: '1.4rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <a href="/work" style={{ ...direct, color: C.cyan }}>See recent work →</a>
+                <a href={`mailto:${SITE.email}`} style={{ ...direct, color: C.cyan }}>✉ {SITE.email}</a>
+              </div>
             </div>
-            {/* Cal.com embedded scheduler (client-only; prefilled). */}
-            <ClientOnly
-              fallback={
-                <div style={{ ...schedBox, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.dim, fontFamily: C.mono, fontSize: '0.85rem' }}>
-                  Loading the calendar… or <a href={schedulerSrc} style={{ color: C.cyan, marginLeft: 4 }} target="_blank" rel="noopener noreferrer">open it in a new tab →</a>
-                </div>
-              }
-            >
-              <iframe
-                title="Book a 30-minute AI scoping call"
-                src={schedulerSrc}
-                style={schedBox}
-                loading="lazy"
-              />
-            </ClientOnly>
-            <p style={{ fontFamily: C.mono, fontSize: '0.72rem', color: C.faint, textAlign: 'center', marginTop: '0.9rem' }}>
-              Can’t see the calendar? <a href={schedulerSrc} style={{ color: C.cyan }} target="_blank" rel="noopener noreferrer">Open the scheduler in a new tab →</a>
-            </p>
           </div>
         ) : (
           // ── Single-step qualifying form + trust sidebar ──
@@ -141,7 +115,7 @@ export default function Contact() {
                 <Button href="#" variant="primary" style={{ justifyContent: 'center', marginTop: '0.2rem' }} onClick={onSubmit}>
                   {status === 'sending' ? 'One sec…' : 'Book my call →'}
                 </Button>
-                {/* Risk-reversal microcopy directly under the button (Dossier §2). */}
+                {/* Risk-reversal microcopy directly under the button. */}
                 <div style={{ fontFamily: C.mono, fontSize: '0.72rem', color: C.faint, textAlign: 'center' }}>
                   {SITE.cta.microcopy}
                 </div>
@@ -194,14 +168,5 @@ const input = {
   padding: '0.6rem 0.7rem',
   outline: 'none',
   width: '100%',
-};
-const schedBox = {
-  width: '100%',
-  height: '700px',
-  maxWidth: '100%',
-  border: `1px solid ${C.panelBorder}`,
-  borderRadius: '6px',
-  background: C.bgAlt,
-  colorScheme: 'dark',
 };
 const direct = { fontFamily: C.mono, fontSize: '0.8rem', color: C.dim, textDecoration: 'none' };

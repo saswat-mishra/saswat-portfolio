@@ -16,7 +16,7 @@ export default {
   seo: {
     title: 'RAG Chatbot & Knowledge Base Development (Cites Your Data)',
     description:
-      'I build retrieval-augmented company copilots and document Q&A that answer from your data with citations — not hallucinations. Hybrid search, reranking, and evals on LangChain/LlamaIndex with Qdrant, pgvector, or Pinecone. Book a free scoping call.',
+      'RAG chatbots and company copilots that answer from your data with citations, not hallucinations — hybrid search, reranking, and evals on Qdrant or pgvector.',
   },
 
   hero: {

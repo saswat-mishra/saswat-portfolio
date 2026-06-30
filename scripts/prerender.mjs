@@ -28,7 +28,12 @@ async function resolveSsrEntry() {
 }
 
 const ssrEntry = await resolveSsrEntry()
-const { render, getAllRoutePaths, services, work, blog } = await import(pathToFileURL(ssrEntry).href)
+const { render, getAllRoutePaths, services, work, blog, headExtras, NOINDEX_ROUTES } = await import(pathToFileURL(ssrEntry).href)
+const noindex = NOINDEX_ROUTES instanceof Set ? NOINDEX_ROUTES : new Set(NOINDEX_ROUTES || [])
+
+// Site-wide verification <meta> + analytics <script> from site.config (empty
+// until tokens are pasted in). Injected into every page's <head>.
+const SITE_HEAD = (typeof headExtras === 'function' ? headExtras() : '') || ''
 
 const template = await readFile(path.join(distDir, 'index.html'), 'utf8')
 
@@ -69,6 +74,7 @@ function routeSource(route) {
   if (route.startsWith('/blog/')) return 'src/routes/BlogPost.jsx'
   if (route === '/about') return 'src/routes/About.jsx'
   if (route === '/contact') return 'src/routes/Contact.jsx'
+  if (route === '/search') return 'src/routes/Search.jsx'
   return 'src/routes/NotFound.jsx'
 }
 function preloadLinks(route) {
@@ -82,7 +88,7 @@ function preloadLinks(route) {
 async function emit(route, file) {
   const { html, head } = await render(route)
   if (!html || html.length < 80) throw new Error(`prerender: render("${route}") produced too little HTML (${html?.length ?? 0} bytes)`)
-  let page = injectHead(template, preloadLinks(route) + head)
+  let page = injectHead(template, SITE_HEAD + preloadLinks(route) + head)
   page = injectHtml(page, html)
   const target = file || outPathFor(route)
   await mkdir(path.dirname(target), { recursive: true })
@@ -103,19 +109,65 @@ await emit('/__not-found__', path.join(distDir, '404.html'))
 console.log(`  ${'/* (404)'.padEnd(34)} → ${path.relative(root, path.join(distDir, '404.html'))}`)
 
 // Generate sitemap.xml from the same route list (single source of truth).
+// noindex tool routes (e.g. /search) are excluded; blog/work get a real per-page
+// lastmod from their content date so search engines see accurate freshness.
 const ORIGIN = 'https://saswatbuilds.com'
 const lastmod = new Date().toISOString().slice(0, 10)
 const loc = (r) => `${ORIGIN}${r === '/' ? '/' : '/' + r.replace(/^\/+|\/+$/g, '') + '/'}`
 const priority = (r) => (r === '/' ? '1.0' : /^\/(services|work|blog)\/[^/]+$/.test(r) ? '0.8' : '0.9')
+const lastmodFor = (r) => {
+  const b = r.match(/^\/blog\/(.+)$/)
+  if (b) { const p = blog.find((x) => x.slug === b[1]); return (p?.updated || p?.date || lastmod) }
+  const w = r.match(/^\/work\/(.+)$/)
+  if (w) { const x = work.find((y) => y.slug === w[1]); return (x?.updated || x?.date || lastmod) }
+  return lastmod
+}
+const indexableRoutes = routes.filter((r) => !noindex.has(r))
 const sitemap =
   `<?xml version="1.0" encoding="UTF-8"?>\n` +
   `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-  routes
-    .map((r) => `  <url>\n    <loc>${loc(r)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${priority(r)}</priority>\n  </url>`)
+  indexableRoutes
+    .map((r) => `  <url>\n    <loc>${loc(r)}</loc>\n    <lastmod>${lastmodFor(r)}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${priority(r)}</priority>\n  </url>`)
     .join('\n') +
   `\n</urlset>\n`
 await writeFile(path.join(distDir, 'sitemap.xml'), sitemap, 'utf8')
-console.log(`  sitemap.xml (${routes.length} urls)`)
+console.log(`  sitemap.xml (${indexableRoutes.length} urls${routes.length - indexableRoutes.length ? `, ${routes.length - indexableRoutes.length} noindex excluded` : ''})`)
+
+// Generate rss.xml from the blog collection (single source of truth = manifest).
+const xmlEscape = (s) =>
+  String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+const rfc822 = (d) => {
+  if (!d) return ''
+  const [y, m, day] = String(d).split('-').map(Number)
+  return new Date(Date.UTC(y, (m || 1) - 1, day || 1, 12)).toUTCString()
+}
+const postUrl = (p) => `${ORIGIN}/blog/${p.slug}/`
+const rssItems = blog
+  .map(
+    (p) =>
+      `  <item>\n` +
+      `    <title>${xmlEscape(p.title)}</title>\n` +
+      `    <link>${postUrl(p)}</link>\n` +
+      `    <guid isPermaLink="true">${postUrl(p)}</guid>\n` +
+      `    <pubDate>${rfc822(p.date)}</pubDate>\n` +
+      `    <description>${xmlEscape(p.description)}</description>\n` +
+      `  </item>`
+  )
+  .join('\n')
+const rss =
+  `<?xml version="1.0" encoding="UTF-8"?>\n` +
+  `<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n` +
+  `<channel>\n` +
+  `  <title>Saswat Mishra — AI Agents, Voice AI, RAG &amp; Automation</title>\n` +
+  `  <link>${ORIGIN}/blog/</link>\n` +
+  `  <atom:link href="${ORIGIN}/rss.xml" rel="self" type="application/rss+xml" />\n` +
+  `  <description>Practical, no-fluff guides on building production AI agents, voice AI, and RAG systems.</description>\n` +
+  `  <language>en-us</language>\n` +
+  `  <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n` +
+  rssItems +
+  `\n</channel>\n</rss>\n`
+await writeFile(path.join(distDir, 'rss.xml'), rss, 'utf8')
+console.log(`  rss.xml (${blog.length} items)`)
 
 // Generate llms.txt from the manifest so AI crawlers get a clean, current map.
 const list = (items, base, label) =>
@@ -137,4 +189,4 @@ const llms =
 await writeFile(path.join(distDir, 'llms.txt'), llms, 'utf8')
 console.log(`  llms.txt`)
 
-console.log(`\n✓ prerender complete: ${count} routes + 404.html + sitemap.xml + llms.txt`)
+console.log(`\n✓ prerender complete: ${count} routes + 404.html + sitemap.xml + rss.xml + llms.txt`)

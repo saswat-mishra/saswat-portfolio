@@ -12,7 +12,7 @@ export default {
   seo: {
     title: 'Case Study: Indian Legal AI Platform (Hybrid RAG + LangGraph)',
     description:
-      'How I built an AI legal research and drafting platform for India: Hybrid RAG (Voyage law-2 + Qdrant + BM25 + reranker) over 41 statutes and 50 Supreme Court cases, a LangGraph agent pipeline, a hallucinated-citation verifier, and 21 contract types with PDF generation.',
+      'An AI legal research and drafting platform for India: Hybrid RAG over 41 statutes and 50 Supreme Court cases, a LangGraph pipeline, and a citation verifier.',
   },
 
   client: 'Legal-tech product',

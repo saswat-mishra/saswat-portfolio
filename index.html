@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0a0a0f" />
     <meta name="author" content="Saswat Mishra" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <!-- robots is emitted per-route by <Seo> (index/follow, or noindex on tool
+         routes) — see src/seo/Seo.jsx. Keeping it only there avoids a duplicate
+         conflicting directive on noindex pages. -->
+    <link rel="alternate" type="application/rss+xml" title="Saswat Mishra — Blog" href="/rss.xml" />
+    <link rel="author" href="/humans.txt" />
 
     <!-- Per-route <head> (title, description, canonical, Open Graph/Twitter, JSON-LD)
          is injected here at build time from react-helmet-async during prerender,

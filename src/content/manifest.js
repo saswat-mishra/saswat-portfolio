@@ -7,7 +7,11 @@
 
 const serviceModules = import.meta.glob('./services/*.js', { eager: true });
 const workModules = import.meta.glob('./work/*.js', { eager: true });
+// Blog posts come from two sources, merged into one collection:
+//   - legacy hand-authored data modules: ./blog/*.js
+//   - markdown articles compiled by plugins/vite-markdown.js: ./blog/posts/*.md
 const blogModules = import.meta.glob('./blog/*.js', { eager: true });
+const mdBlogModules = import.meta.glob('./blog/posts/*.md', { eager: true });
 
 const collect = (mods) =>
   Object.values(mods)
@@ -20,7 +24,7 @@ const byDateDesc = (a, b) => String(b.date || '').localeCompare(String(a.date ||
 
 export const services = collect(serviceModules).sort(byOrder);
 export const work = collect(workModules).sort(byOrder);
-export const blog = collect(blogModules).sort(byDateDesc);
+export const blog = [...collect(blogModules), ...collect(mdBlogModules)].sort(byDateDesc);
 
 export const getService = (slug) => services.find((s) => s.slug === slug);
 export const getWork = (slug) => work.find((w) => w.slug === slug);
@@ -51,8 +55,12 @@ export function getAllRoutePaths() {
     '/blog',
     '/about',
     '/contact',
+    '/search',
     ...services.map((s) => `/services/${s.slug}`),
     ...work.map((w) => `/work/${w.slug}`),
     ...blog.map((p) => `/blog/${p.slug}`),
   ];
 }
+
+/** Routes that are prerendered but excluded from sitemap.xml (noindex tools). */
+export const NOINDEX_ROUTES = new Set(['/search']);

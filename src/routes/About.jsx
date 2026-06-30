@@ -1,5 +1,6 @@
 import Seo from '../seo/Seo.jsx';
-import { personJsonLd, breadcrumbJsonLd, faqJsonLd } from '../seo/jsonld.js';
+import { personJsonLd, organizationJsonLd, profilePageJsonLd, breadcrumbJsonLd, faqJsonLd } from '../seo/jsonld.js';
+import { SITE } from '../site.config.js';
 import Breadcrumbs from '../components/ui/Breadcrumbs.jsx';
 import PageHero from '../components/ui/PageHero.jsx';
 import ProofBar from '../components/ui/ProofBar.jsx';
@@ -34,10 +35,11 @@ export default function About() {
     <>
       <Seo
         title="About Saswat Mishra — AI Agent Developer (IIT Delhi)"
-        description="Saswat Mishra is an AI agent developer & senior ML engineer from IIT Delhi with 5+ years shipping production AI for B2B teams across the US, UK, UAE, and Singapore."
+        description="AI agent developer & senior ML engineer from IIT Delhi — 5+ years shipping production AI for B2B teams across the US, UK, UAE, and Singapore."
         path="/about"
         type="profile"
-        jsonLd={[personJsonLd(), breadcrumbJsonLd(crumbs), faqJsonLd(ABOUT_FAQ)]}
+        image="/og/about.png"
+        jsonLd={[personJsonLd(), organizationJsonLd(), profilePageJsonLd(), breadcrumbJsonLd(crumbs), faqJsonLd(ABOUT_FAQ)]}
       />
       <Breadcrumbs items={crumbs} />
       <PageHero
@@ -51,6 +53,9 @@ export default function About() {
       <Section>
         <Kicker>Background</Kicker>
         <SectionTitle>From IIT Delhi to production AI</SectionTitle>
+        {/* Canonical bio — the exact string mirrored in the footer and in
+            Person/Organization JSON-LD (entity consistency). */}
+        <p style={{ ...para, color: C.text }}>{SITE.canonicalBio}</p>
         <p style={para}>I studied Industrial Engineering & Entrepreneurship at IIT Delhi (JEE Mains AIR-1331), and I’ve spent the years since at the intersection of machine learning and product — the rare combination that makes AI projects actually land. I’ve built and shipped across fintech, legal tech, real estate, entertainment, and gaming.</p>
         <p style={para}>That range matters: most "AI developers" can wire up an API call. Far fewer have taken multi-agent systems, voice AI, and RAG pipelines all the way into production, with the guardrails and observability that keep them reliable once real users show up. That’s the work I do.</p>
       </Section>

@@ -12,7 +12,7 @@ export default {
   seo: {
     title: 'Case Study: PropTech AI Marketplace for 7-Day Property Flips',
     description:
-      'How I built Movin Homes as CTO and co-founder — a Python/Streamlit engine that scrapes live market data, uses variance mapping and sale velocity to flag undervalued properties for 7-day flips at 12% margins, plus a React marketplace scaling a 100+ broker network. SPC Fall 2025 finalist.',
+      'Movin Homes, built as CTO: a Python engine that flags undervalued properties for 7-day flips at 12% margins, plus a React marketplace for 100+ brokers.',
   },
 
   client: 'Movin Homes (co-founded venture)',

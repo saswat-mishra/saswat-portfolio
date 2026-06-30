@@ -16,7 +16,7 @@ export default {
   seo: {
     title: 'Custom AI Agent Development (LangGraph & Multi-Agent)',
     description:
-      'Custom AI agent development with LangGraph and multi-agent orchestration. I design, build, and ship autonomous agents that reason, plan, and take real work off your team. Book a free scoping call.',
+      'Custom AI agent development with LangGraph and multi-agent orchestration — autonomous agents that reason, plan, and take real work off your team.',
   },
 
   hero: {

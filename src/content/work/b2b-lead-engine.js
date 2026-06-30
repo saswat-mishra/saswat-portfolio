@@ -12,7 +12,7 @@ export default {
   seo: {
     title: 'Case Study: 6-Agent B2B Lead Engine (LangGraph Multi-Agent)',
     description:
-      'How I built a 6-agent LangGraph StateGraph for end-to-end B2B sales: MEDDIC scoring (0-60), 7 embedded sales frameworks, omnichannel outreach over LinkedIn, email, and AI voice, a human-in-the-loop Streamlit dashboard, and 124 tests.',
+      'A 6-agent LangGraph engine for end-to-end B2B sales: MEDDIC scoring, omnichannel outreach (LinkedIn, email, voice), and a human-in-the-loop dashboard.',
   },
 
   client: 'B2B sales / GTM team',

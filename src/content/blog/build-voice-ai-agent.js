@@ -12,7 +12,7 @@ export default {
   slug: 'build-voice-ai-agent',
   title: 'How to Build a Voice AI Agent: An Architecture Walkthrough (2026)',
   description:
-    'A senior engineer’s end-to-end guide to building a real-time voice AI agent in 2026 — telephony, STT, turn-taking/VAD, the LLM, TTS, barge-in, human handoff, and the latency budget that makes a call feel human instead of robotic.',
+    'An engineer’s end-to-end guide to a real-time voice AI agent: telephony, STT, turn-taking, the LLM, TTS, barge-in, human handoff, and the latency budget.',
   date: '2026-05-24',
   updated: '2026-05-24',
   readingTime: '10 min',

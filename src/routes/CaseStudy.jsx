@@ -32,6 +32,7 @@ export default function CaseStudy() {
         description={w.seo?.description || w.summary}
         path={path}
         type="article"
+        image={`/og/${w.slug}.png`}
         jsonLd={[
           caseStudyJsonLd({ title: w.title, description: w.seo?.description || w.summary, path, serviceName: w.serviceName }),
           breadcrumbJsonLd(crumbs),

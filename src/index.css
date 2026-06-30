@@ -152,3 +152,87 @@ body::after {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Markdown article body (rendered from content/blog/posts/*.md).
+   Cyberpunk theme, but body copy is deliberately high-contrast and readable
+   (#c9d3e0 on #030712) per the GEO/readability requirement. */
+.article-body {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  line-height: 1.85;
+  color: #c9d3e0;
+}
+.article-body > *:first-child { margin-top: 0; }
+.article-body p { margin: 0 0 1.2rem; }
+.article-body h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+  line-height: 1.25;
+  color: #e2e8f0;
+  margin: 2.6rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.12);
+  scroll-margin-top: 90px;
+}
+.article-body h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #00d4ff;
+  margin: 1.9rem 0 0.7rem;
+  scroll-margin-top: 90px;
+}
+.article-body strong { color: #ffffff; font-weight: 700; }
+.article-body a { color: #00ff41; text-decoration: underline; text-underline-offset: 2px; }
+.article-body a:hover { color: #00d4ff; }
+.article-body ul, .article-body ol { margin: 0 0 1.2rem; padding-left: 1.4rem; }
+.article-body li { margin: 0 0 0.55rem; }
+.article-body li::marker { color: #00ff41; }
+.article-body blockquote {
+  border-left: 3px solid #00ff41;
+  margin: 0 0 1.4rem;
+  padding: 0.5rem 0 0.5rem 1.2rem;
+  color: #e2e8f0;
+  font-style: italic;
+}
+.article-body code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  color: #00ff41;
+  background: rgba(0, 255, 65, 0.08);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+}
+.article-body pre {
+  background: #070b16;
+  border: 1px solid rgba(0, 255, 65, 0.12);
+  border-radius: 4px;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  margin: 0 0 1.4rem;
+}
+.article-body pre code { background: none; padding: 0; font-size: 0.8rem; line-height: 1.6; color: #b6f5c4; }
+.article-body table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 0 0 1.5rem;
+  font-size: 0.84rem;
+}
+.article-body th {
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  color: #00ff41;
+  background: rgba(0, 255, 65, 0.05);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.25);
+  white-space: nowrap;
+}
+.article-body td {
+  padding: 0.7rem 0.9rem;
+  color: #c9d3e0;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.12);
+  vertical-align: top;
+}
+.article-body hr { border: none; border-top: 1px solid rgba(0, 255, 65, 0.12); margin: 2rem 0; }

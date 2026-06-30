@@ -1,0 +1,18 @@
+/* TEAM */
+  Developer & founder: Saswat Mishra
+  Role: AI Agent Developer & Senior ML Engineer
+  From: IIT Delhi
+  Site: https://saswatbuilds.com
+  Contact: saswatmishra.iitd [at] gmail.com
+  LinkedIn: https://www.linkedin.com/in/saswatbuilds/
+  GitHub: https://github.com/saswat-mishra
+
+/* SITE */
+  Standards: HTML5, semantic, server-prerendered static HTML
+  Stack: React 19, Vite, React Router 7, Three.js, Tailwind
+  Build: build-time SSR prerender (each route → static HTML + JSON-LD)
+  Hosting: GitHub Pages, Cloudflare DNS, apex domain
+  Doctype: cyberpunk / terminal aesthetic
+
+/* THANKS */
+  Built with help from Claude Code.

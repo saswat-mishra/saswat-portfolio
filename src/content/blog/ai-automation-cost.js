@@ -12,7 +12,7 @@ export default {
   slug: 'ai-automation-cost',
   title: 'How Much Does AI Automation Cost? (2026 Pricing Guide)',
   description:
-    'A practical 2026 breakdown of what AI workflow automation costs — per-workflow build ranges for n8n, Make, Zapier, and custom Python, plus the tooling subscriptions and the factors that actually move the price.',
+    'What AI workflow automation costs in 2026 — per-workflow build ranges for n8n, Make, Zapier, and custom Python, plus the factors that move the price.',
   date: '2026-05-18',
   updated: '2026-05-18',
   readingTime: '8 min',

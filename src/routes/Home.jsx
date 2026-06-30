@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Seo from '../seo/Seo.jsx';
-import { personJsonLd, websiteJsonLd, profilePageJsonLd, serviceJsonLd, faqJsonLd } from '../seo/jsonld.js';
+import { personJsonLd, websiteJsonLd, organizationJsonLd, serviceJsonLd, faqJsonLd } from '../seo/jsonld.js';
 import BootScreen from '../components/Boot/BootScreen.jsx';
 import { SITE } from '../site.config.js';
 import { C, WRAP } from '../theme.js';
@@ -55,8 +55,8 @@ export default function Home() {
         path="/"
         jsonLd={[
           personJsonLd(),
+          organizationJsonLd(),
           websiteJsonLd(),
-          profilePageJsonLd(),
           serviceJsonLd({
             name: 'AI Agent Development Services',
             serviceType: 'AI Agent Development',

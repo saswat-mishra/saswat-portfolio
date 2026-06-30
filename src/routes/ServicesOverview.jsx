@@ -31,6 +31,7 @@ export default function ServicesOverview() {
         title="AI Development Services & Pricing"
         description="AI agent development, voice AI, RAG knowledge bases, and workflow automation — plus transparent pilot/build/retainer packages. Book a free scoping call."
         path="/services"
+        image="/og/services.png"
         jsonLd={[breadcrumbJsonLd(crumbs), faqJsonLd(PRICING_FAQ)]}
       />
       <Breadcrumbs items={crumbs} />

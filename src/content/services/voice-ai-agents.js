@@ -16,7 +16,7 @@ export default {
   seo: {
     title: 'AI Voice Agent Development (Retell, Vapi & Twilio)',
     description:
-      'AI voice agent development for real-time phone calls that book, qualify, support, and follow up. I build sub-second, natural-sounding voice agents with human handoff on Twilio, Retell, Vapi, and LiveKit. Book a free scoping call.',
+      'AI voice agents for real-time phone calls that book, qualify, and support — sub-second, with clean human handoff on Twilio, Retell, and Vapi.',
   },
 
   hero: {

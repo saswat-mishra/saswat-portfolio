@@ -14,8 +14,9 @@ export default function WorkIndex() {
     <>
       <Seo
         title="Case studies — shipped AI agent, voice & automation builds"
-        description="Real AI systems I’ve designed and shipped: multi-agent GTM automation, voice AI, legal RAG, and more — with the problem, approach, and measurable results for each."
+        description="Real AI systems I’ve designed and shipped: multi-agent GTM automation, voice AI, and legal RAG — the problem, approach, and measurable result for each."
         path="/work"
+        image="/og/work.png"
         jsonLd={[breadcrumbJsonLd(crumbs)]}
       />
       <Breadcrumbs items={crumbs} />

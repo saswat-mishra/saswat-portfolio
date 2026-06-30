@@ -16,7 +16,7 @@ export default {
   seo: {
     title: 'AI Workflow Automation Services (n8n, Make & Custom Python)',
     description:
-      'AI workflow automation that takes manual, repetitive work off your team. I automate ops, GTM, and back-office workflows with n8n/Make/Zapier plus custom Python and LangGraph where logic gets bespoke — typically cutting manual effort 60-90%. Book a free scoping call.',
+      'AI workflow automation that takes manual, repetitive work off your team — n8n, Make, and custom Python/LangGraph, typically cutting manual effort 60–90%.',
   },
 
   hero: {
@@ -69,7 +69,7 @@ export default {
 
   related: {
     caseStudies: ['b2b-lead-engine', 'claude-cowork-linkedin-agent'],
-    articles: ['ai-automation-cost', 'why-ai-agents-fail'],
+    articles: ['ai-automation-cost', 'ai-agent-cost', 'why-ai-agents-fail'],
   },
 
   offers: [

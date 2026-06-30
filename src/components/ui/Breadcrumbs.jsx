@@ -1,19 +1,16 @@
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import { breadcrumbJsonLd } from '../../seo/jsonld.js';
 import { C, WRAP } from '../../theme.js';
 
 /**
- * Crawlable breadcrumb trail + BreadcrumbList JSON-LD.
+ * Crawlable breadcrumb trail (visual). BreadcrumbList JSON-LD is emitted once per
+ * route via <Seo jsonLd={[breadcrumbJsonLd(crumbs), …]}> — do NOT also emit it
+ * here, or every page ships a duplicate BreadcrumbList.
  * items: [{ name, path }] from Home → current page (current is rendered plain).
  */
 export default function Breadcrumbs({ items }) {
   if (!items?.length) return null;
   return (
     <nav aria-label="Breadcrumb" style={{ ...WRAP, paddingTop: '90px' }}>
-      <Helmet>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd(items))}</script>
-      </Helmet>
       <ol
         style={{
           listStyle: 'none',

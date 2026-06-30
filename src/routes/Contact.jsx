@@ -42,6 +42,7 @@ export default function Contact() {
         title="Contact — book a free AI scoping call"
         description="Tell me what you want to automate and book a free 30-minute AI scoping call. Honest take on whether it’s worth building, rough cost, and how I’d approach it."
         path="/contact"
+        image="/og/contact.png"
         jsonLd={[breadcrumbJsonLd(crumbs)]}
       />
       <Breadcrumbs items={crumbs} />

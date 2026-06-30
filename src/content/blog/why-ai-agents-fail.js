@@ -12,7 +12,7 @@ export default {
   slug: 'why-ai-agents-fail',
   title: 'Why AI Agents Fail in Production (And How to Prevent Each Failure)',
   description:
-    'The real reasons AI agents break in production — no guardrails, no evals, no observability, runaway loops, and bad tool design — plus a practical fix for each, from an engineer who ships them.',
+    'Why AI agents break in production — no guardrails, no evals, no observability, runaway loops, and bad tool design — plus a practical fix for each.',
   date: '2026-05-30',
   updated: '2026-05-30',
   readingTime: '9 min',

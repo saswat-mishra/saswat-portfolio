@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:client && npm run build:server && npm run prerender",
+    "build": "npm run og && npm run build:client && npm run build:server && npm run prerender && npm run budget",
     "build:client": "vite build",
     "build:server": "vite build --ssr src/entry-server.jsx --outDir dist-ssr",
     "prerender": "node scripts/prerender.mjs",
+    "og": "node scripts/generate-og-images.mjs",
+    "budget": "node scripts/check-budget.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -43,6 +45,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "lighthouse": "^13.4.0",
+    "marked": "^18.0.5",
     "vite": "^8.0.1"
   }
 }

@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Generated per-page OG images (rebuilt by `npm run og` during the build)
+public/og/
+
 # Environment variables — never commit secrets
 .env
 .env.*

@@ -12,7 +12,7 @@ export default {
   seo: {
     title: 'Case Study: Podit — Hybrid Voice AI Event & Scheduling Agent',
     description:
-      'How I built Podit, a hybrid voice/text AI agent for event planning and scheduling: sub-500ms latency, Google Calendar integration, conflict detection, and dynamic guardrails that respect sleep and work hours. Built on LangGraph, OpenAI, and Twilio.',
+      'Podit — a hybrid voice/text AI scheduling agent: sub-500ms latency, Google Calendar sync, conflict detection, and sleep/work-hour guardrails.',
   },
 
   client: 'Podit (startup)',

@@ -16,6 +16,7 @@ export default function BlogIndex() {
         title="Blog — AI agents, voice AI, RAG & automation"
         description="Practical, no-fluff guides on building production AI agents, voice AI, and RAG systems — costs, framework comparisons, and what actually works."
         path="/blog"
+        image="/og/blog.png"
         jsonLd={[breadcrumbJsonLd(crumbs)]}
       />
       <Breadcrumbs items={crumbs} />

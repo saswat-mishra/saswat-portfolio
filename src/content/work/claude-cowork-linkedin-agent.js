@@ -12,7 +12,7 @@ export default {
   seo: {
     title: 'Case Study: 12-Agent LinkedIn GTM Automation (Claude API)',
     description:
-      'How I built Claude Cowork — a 12-agent system on the Claude API that auto-discovers topics, publishes in-voice posts, scores leads on a 100-point ICP model, and runs DM outreach. 28 days: +5,735% impressions.',
+      'Claude Cowork — a 12-agent Claude API system that publishes in-voice LinkedIn posts, scores leads, and runs DM outreach. 28 days: +5,735% impressions.',
   },
 
   client: 'Solo founder / GTM',

@@ -1,26 +1,60 @@
+# saswatbuilds.com — open to search + AI answer engines.
+# Default: allow everything. Explicit groups below signal intent for the crawlers
+# we most want indexing / citing the site.
 User-agent: *
 Allow: /
 
-# AI search crawlers — explicitly permitted
-User-agent: GPTBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
+# ── Search engines ───────────────────────────────────────────────
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
+User-agent: DuckDuckBot
+Allow: /
+
+# ── AI answer engines / training (explicitly permitted) ──────────
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
 User-agent: anthropic-ai
 Allow: /
 
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
 User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: CCBot
 Allow: /
 
 Sitemap: https://saswatbuilds.com/sitemap.xml

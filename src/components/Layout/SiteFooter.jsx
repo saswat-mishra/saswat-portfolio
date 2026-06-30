@@ -2,6 +2,17 @@ import { Link } from 'react-router-dom';
 import { FOOTER_NAV, SITE } from '../../site.config.js';
 import { C, WRAP } from '../../theme.js';
 
+// Social links, in sameAs order; only render the ones with a configured URL.
+const SOCIALS = [
+  { label: 'LinkedIn', href: SITE.social.linkedin },
+  { label: 'GitHub', href: SITE.social.github },
+  { label: 'Upwork', href: SITE.social.upwork },
+  { label: 'X', href: SITE.social.x },
+  { label: 'Hugging Face', href: SITE.social.huggingface },
+  { label: 'Crunchbase', href: SITE.social.crunchbase },
+  { label: 'Clutch', href: SITE.social.clutch },
+].filter((s) => s.href);
+
 export default function SiteFooter() {
   const year = 2026;
   return (
@@ -13,8 +24,9 @@ export default function SiteFooter() {
             <div style={{ fontFamily: C.display, fontWeight: 900, fontSize: '1.2rem', color: C.green, textShadow: '0 0 12px rgba(0,255,65,0.5)', letterSpacing: '0.08em' }}>
               SASWAT MISHRA
             </div>
-            <p style={{ fontFamily: C.mono, fontSize: '0.75rem', color: C.dim, lineHeight: 1.7, marginTop: '0.7rem', maxWidth: 260 }}>
-              {SITE.tagline}
+            {/* Canonical bio — verbatim match with About page + Person/Org JSON-LD. */}
+            <p style={{ fontFamily: C.mono, fontSize: '0.75rem', color: C.dim, lineHeight: 1.7, marginTop: '0.7rem', maxWidth: 340 }}>
+              {SITE.canonicalBio}
             </p>
             <Link to={SITE.cta.href} style={{ display: 'inline-block', marginTop: '1rem', fontFamily: C.mono, fontSize: '0.75rem', color: C.green, border: `1px solid ${C.green}`, borderRadius: '3px', padding: '0.5rem 0.9rem', textDecoration: 'none' }}>
               {SITE.cta.label} →
@@ -48,10 +60,10 @@ export default function SiteFooter() {
           <span style={{ fontFamily: C.mono, fontSize: '0.7rem', color: C.faint }}>
             © {year} Saswat Mishra · saswatbuilds.com
           </span>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <a href={SITE.social.linkedin} style={fLink} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <a href={SITE.social.github} style={fLink} target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href={SITE.social.upwork} style={fLink} target="_blank" rel="noopener noreferrer">Upwork</a>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+            {SOCIALS.map((s) => (
+              <a key={s.label} href={s.href} style={fLink} target="_blank" rel="noopener noreferrer me">{s.label}</a>
+            ))}
             <a href={`mailto:${SITE.email}`} style={fLink}>Email</a>
           </div>
         </div>

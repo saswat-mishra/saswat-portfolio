@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { visualizer } from 'rollup-plugin-visualizer'
+import markdown from './plugins/vite-markdown.js'
 
 // Served from the apex domain saswatbuilds.com, so base is root "/".
 // (Was "/saswat-portfolio/" while on the github.io project subpath.)
@@ -12,6 +13,9 @@ import { visualizer } from 'rollup-plugin-visualizer'
 export default defineConfig({
   base: '/',
   plugins: [
+    // Compiles content/blog/posts/*.md → data modules at build time, so `marked`
+    // runs in Node during the build and never ships to the client runtime.
+    markdown(),
     react(),
     tailwindcss(),
     process.env.ANALYZE &&

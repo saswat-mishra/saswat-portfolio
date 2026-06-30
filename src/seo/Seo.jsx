@@ -39,7 +39,12 @@ export default function Seo({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonical} />
-      {noindex && <meta name="robots" content="noindex, follow" />}
+      {/* Single robots directive per page (the static index.html tag was removed
+          to avoid an index+noindex conflict on noindex routes). */}
+      <meta
+        name="robots"
+        content={noindex ? 'noindex, follow' : 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'}
+      />
 
       {/* Open Graph */}
       <meta property="og:type" content={type} />

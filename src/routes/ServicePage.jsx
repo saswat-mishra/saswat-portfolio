@@ -36,6 +36,7 @@ export default function ServicePage() {
         title={s.seo.title}
         description={s.seo.description}
         path={path}
+        image={`/og/${s.slug}.png`}
         jsonLd={[
           serviceJsonLd({ name: s.nav, serviceType: s.serviceType, description: s.seo.description, path, offers: s.offers }),
           breadcrumbJsonLd(crumbs),

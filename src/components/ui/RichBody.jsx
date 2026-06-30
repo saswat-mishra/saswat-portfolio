@@ -1,4 +1,5 @@
 import { C } from '../../theme.js';
+import { slugify } from '../../lib/slug.js';
 
 // Minimal inline formatter: **bold** → <strong>. Keeps content data plain.
 function inline(text) {
@@ -17,8 +18,9 @@ function inline(text) {
 }
 
 const p = { fontFamily: C.mono, fontSize: '0.95rem', color: C.dim, lineHeight: 1.85, margin: '0 0 1.2rem' };
-const h2 = { fontFamily: C.display, fontWeight: 800, fontSize: 'clamp(1.3rem, 2.6vw, 1.7rem)', color: C.text, lineHeight: 1.25, margin: '2.4rem 0 1rem' };
-const h3 = { fontFamily: C.display, fontWeight: 700, fontSize: '1.1rem', color: C.cyan, margin: '1.8rem 0 0.8rem' };
+// scrollMarginTop keeps anchor-jumped headings clear of the sticky header.
+const h2 = { fontFamily: C.display, fontWeight: 800, fontSize: 'clamp(1.3rem, 2.6vw, 1.7rem)', color: C.text, lineHeight: 1.25, margin: '2.4rem 0 1rem', scrollMarginTop: '90px' };
+const h3 = { fontFamily: C.display, fontWeight: 700, fontSize: '1.1rem', color: C.cyan, margin: '1.8rem 0 0.8rem', scrollMarginTop: '90px' };
 const li = { ...p, margin: '0 0 0.6rem' };
 
 /** Renders an array of typed content blocks into semantic, crawlable HTML. */
@@ -29,9 +31,9 @@ export default function RichBody({ blocks }) {
       {blocks.map((b, i) => {
         switch (b.type) {
           case 'h2':
-            return <h2 key={i} style={h2}>{b.text}</h2>;
+            return <h2 key={i} id={slugify(b.text)} style={h2}>{b.text}</h2>;
           case 'h3':
-            return <h3 key={i} style={h3}>{b.text}</h3>;
+            return <h3 key={i} id={slugify(b.text)} style={h3}>{b.text}</h3>;
           case 'ul':
             return (
               <ul key={i} style={{ paddingLeft: '1.2rem', margin: '0 0 1.2rem' }}>

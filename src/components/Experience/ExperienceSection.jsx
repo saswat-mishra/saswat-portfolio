@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
+// eslint-disable-next-line no-unused-vars -- used in JSX (<motion.*>); core ESLint has no JSX awareness
 import { motion, useInView } from 'framer-motion';
 
 // ─── Module-level layout constants ────────────────────────────────────────────

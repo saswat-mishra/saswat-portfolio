@@ -9,7 +9,7 @@
  * statically reachable from Home, so if it leaked into another route's graph,
  * that route would blow past the shell budget and fail here.
  */
-import { readFile, stat } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

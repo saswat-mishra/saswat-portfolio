@@ -102,7 +102,7 @@ let count = 0
 for (const route of routes) {
   const { target, bytes } = await emit(route)
   count++
-  console.log(`  ${String(route).padEnd(34)} → ${path.relative(root, target)} (+${bytes.toLocaleString()} bytes)`) // eslint-disable-line
+  console.log(`  ${String(route).padEnd(34)} → ${path.relative(root, target)} (+${bytes.toLocaleString()} bytes)`)
 }
 
 // Custom 404 for GitHub Pages: render the catch-all route to dist/404.html.

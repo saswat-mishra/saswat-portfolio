@@ -117,7 +117,7 @@ const styles = {
     textShadow: '0 0 6px rgba(0,255,65,0.6)',
   },
 
-  hamburger: (open) => ({
+  hamburger: () => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -178,7 +178,6 @@ const styles = {
     textShadow: active ? '0 0 8px #00ff41' : 'none',
     textDecoration: 'none',
     cursor: 'pointer',
-    borderBottom: '1px solid rgba(0,255,65,0.07)',
     background: 'none',
     border: 'none',
     borderBottom: '1px solid rgba(0,255,65,0.07)',

@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, Suspense, useCallback, lazy } from 'react';
+// eslint-disable-next-line no-unused-vars -- used in JSX (<motion.*>); core ESLint has no JSX awareness
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
@@ -164,9 +165,8 @@ function MusicPlayer() {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0);   // 0–1, starts muted
-  const [ready, setReady] = useState(false);
+  const [, setReady] = useState(false);
   const [floated, setFloated] = useState(false); // true when scrolled past hero
-  const animRef = useRef(null);
   const barsRef = useRef([0.3, 0.5, 0.7, 0.4, 0.6, 0.5, 0.3, 0.45]);
 
   useEffect(() => {
@@ -226,7 +226,7 @@ function MusicPlayer() {
   }, [playing]);
 
   // Force re-render for bar animation
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
   useEffect(() => {
     if (!playing) return;
     const id = setInterval(() => setTick(t => t + 1), 80);

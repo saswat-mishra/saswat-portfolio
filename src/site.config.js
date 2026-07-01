@@ -48,12 +48,15 @@ export const SITE = {
     bing: '', // Bing Webmaster Tools → meta tag → the content="..." value
   },
   analytics: {
+    // Google Analytics 4 measurement ID (gtag.js). SPA route changes are tracked
+    // via GA4 Enhanced Measurement (on by default in the property).
+    googleAnalyticsId: 'G-DYH6V87FXW',
     // Cloudflare Web Analytics (free, cookieless): dash.cloudflare.com → Web
     // Analytics → add saswatbuilds.com → copy the beacon token.
     cloudflareToken: '',
     plausibleDomain: '', // optional: set to 'saswatbuilds.com' if you add Plausible
   },
-  clarity: '', // Microsoft Clarity project ID (clarity.microsoft.com)
+  clarity: 'xfpjms8cfw', // Microsoft Clarity project ID (clarity.microsoft.com)
   // Primary CTA, used site-wide (header button, page CTA blocks). First-person
   // label per the Dossier, identical everywhere. Risk-reversal microcopy below it.
   cta: {
@@ -137,6 +140,13 @@ export function sameAs() {
  */
 export function headExtras() {
   const out = [];
+  if (SITE.analytics.googleAnalyticsId) {
+    const id = SITE.analytics.googleAnalyticsId;
+    out.push(
+      `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"></script>` +
+        `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${id}');</script>`,
+    );
+  }
   if (SITE.verification.google)
     out.push(`<meta name="google-site-verification" content="${SITE.verification.google}">`);
   if (SITE.verification.bing)

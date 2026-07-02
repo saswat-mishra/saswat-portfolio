@@ -48,6 +48,7 @@ export const SITE = {
     bing: '', // Bing Webmaster Tools → meta tag → the content="..." value
   },
   analytics: {
+    ga4: 'G-RP8GGDQ1J6', // GA4 Measurement ID — property "saswatbuilds.com"
     // Cloudflare Web Analytics (free, cookieless): dash.cloudflare.com → Web
     // Analytics → add saswatbuilds.com → copy the beacon token.
     cloudflareToken: '',
@@ -141,6 +142,12 @@ export function headExtras() {
     out.push(`<meta name="google-site-verification" content="${SITE.verification.google}">`);
   if (SITE.verification.bing)
     out.push(`<meta name="msvalidate.01" content="${SITE.verification.bing}">`);
+  // Google Analytics 4 (gtag.js) — property "saswatbuilds.com" (G-RP8GGDQ1J6).
+  if (SITE.analytics.ga4)
+    out.push(
+      `<script async src="https://www.googletagmanager.com/gtag/js?id=${SITE.analytics.ga4}"></script>`,
+      `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${SITE.analytics.ga4}');</script>`,
+    );
   if (SITE.analytics.cloudflareToken)
     out.push(
       `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${SITE.analytics.cloudflareToken}"}'></script>`,
